@@ -538,6 +538,52 @@
   .pending-card .care-note{margin:0}
   .chip.plain{background:#FFFBF6;color:var(--ink-mute);border-color:var(--line);font-size:16px}
 
+  /* ───── 주간 보기: 이번 주 / 다음 주 ───── */
+  .wksw{display:flex;gap:7px;padding:2px 0 9px}
+  .wksw button{
+    flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:1px;
+    padding:7px 6px 8px;border-radius:14px;border:1.5px solid var(--line);background:#fff;
+    font-family:inherit;color:var(--ink-soft);cursor:pointer;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .wksw b{font-size:14px;font-weight:800;letter-spacing:-.02em}
+  .wksw span{font-size:12.5px;font-weight:700;color:var(--ink-mute);font-variant-numeric:tabular-nums}
+  .wksw button[aria-pressed="true"]{
+    border-color:var(--peach);background:linear-gradient(180deg,#FFFFFF 0%,#FFF3E9 100%);
+    box-shadow:0 4px 12px rgba(240,112,90,.16);
+  }
+  .wksw button[aria-pressed="true"] b{color:var(--coral)}
+  .wksw button[aria-pressed="true"] span{color:#C0674A}
+  .wksw button:focus-visible{outline:3px solid #F7B9A6;outline-offset:2px}
+  .tabs.dense .tab{padding:9px 4px 10px}
+  .tabs.dense .tab .w{font-size:12.5px}
+  .tabs.dense .tab .d{font-size:17.5px}
+  /* 7칸이 빽빽할 땐 점을 요일 글자 대신 숫자 밑으로 내려요 */
+  .tabs.dense .tab .flag{
+    top:auto;bottom:5px;right:auto;left:50%;margin-left:-3px;width:6px;height:6px;
+    box-shadow:0 0 0 1.5px #fff;
+  }
+
+  /* 지난 날(11/25 이전)은 흐리게만 */
+  .cell.past{background:transparent;cursor:default}
+  .cell.past .n{color:#CDBFB0;font-weight:700}
+  .cal-key i.old{background:#E3D6C7}
+
+  /* 민용 일정 카드 */
+  .sched{background:#FCFAF7}
+  .sched-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+  .sched-list li{
+    display:flex;align-items:center;gap:9px;background:#fff;
+    border:1.5px solid var(--line);border-radius:14px;padding:9px 12px;
+  }
+  .sched-time{flex:none;font-size:14px;font-weight:800;color:#2558A8;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .sched-name{font-size:15.5px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+  .sched-note{
+    margin-left:auto;flex:none;font-size:12.5px;font-weight:800;color:#8A6A3F;
+    background:#FFF6E2;border:1px solid #F4E2B8;border-radius:999px;padding:2px 8px;white-space:nowrap;
+  }
+  .sched .care-note{margin:11px 0 0}
+
   @media (prefers-reduced-motion:reduce){
     *{animation:none !important;transition:none !important}
   }
@@ -549,7 +595,7 @@
   <header class="hero">
     <div class="hero-top">
       <span class="pill daycare">🏫 놀이세상어린이집</span>
-      <span class="pill week">2026.11.30 – 12.04</span>
+      <span class="pill week">2026.11.25 – 12.04</span>
     </div>
     <h1><span class="egg">🐣</span> 채은이 등하원<br>&amp; 식단 공유</h1>
 
@@ -583,7 +629,7 @@
 
   <section class="cal-card" aria-labelledby="calTitle">
     <div class="cal-head">
-      <h2 id="calTitle">2026년 12월</h2>
+      <h2 id="calTitle">2026년 11~12월</h2>
       <div class="seg" role="group" aria-label="보기 방식">
         <button class="seg-btn" type="button" data-view="month" aria-pressed="true">월간</button>
         <button class="seg-btn" type="button" data-view="week" aria-pressed="false">주간</button>
@@ -592,17 +638,19 @@
 
     <div class="cal-body" id="calMonth">
       <div class="cal-wd" aria-hidden="true">
-        <span class="sun">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span>
+        <span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span><span class="sun">일</span>
       </div>
-      <div class="cal-grid" id="calGrid" role="group" aria-label="2026년 12월 달력"></div>
+      <div class="cal-grid" id="calGrid" role="group" aria-label="2026년 11월 25일부터 12월 달력"></div>
       <div class="cal-key">
         <span><i class="red"></i>돌봄 필요</span>
         <span><i class="ok-i">✓</i>확정</span>
         <span><i class="wk"></i>주말</span>
+        <span><i class="old"></i>지난 날</span>
       </div>
     </div>
 
     <div class="cal-week" id="calWeek" hidden>
+      <div class="wksw" id="weekSwitch" role="group" aria-label="주 선택"></div>
       <div class="tabs" id="tabs" role="group" aria-label="이번 주 날짜"></div>
     </div>
   </section>
@@ -694,8 +742,26 @@
   function mdw(s) { return md(s) + "(" + WD[parseDate(s).getDay()] + ")"; }
   function longDate(s) { var d = parseDate(s); return (d.getMonth() + 1) + "월 " + d.getDate() + "일"; }
 
-  /* ── 등록된 일정 (11/30 ~ 12/4) ── */
+  /* ── 등록된 일정 (11/25 ~ 12/4) ── */
   var BASE = {
+    "2026-11-25": { rel: "민용 강의", dropoff: "yujin", pickup: "yujin",
+      evening: { kind: "free", who: "yujin" },
+      lectures: [
+        { start: "10:00", end: "13:00", label: "내일코칭" },
+        { start: "14:00", end: "17:00", label: "내일코칭문풀" }
+      ],
+      why: "민용 강의가 17:00까지라 등원·하원 모두 유진이 맡아요.",
+      memoExample: "복직 전 마지막 주 — 낮잠이불 미리 챙기기" },
+    "2026-11-26": { rel: "저녁 강의", dropoff: "minyong", pickup: "minyong",
+      evening: { kind: "free", who: "yujin" },
+      lectures: [ { start: "19:00", end: "22:00", label: "내일코칭", note: "17:30 출발" } ],
+      why: "저녁 강의가 있는 날 — 등·하원은 민용이, 저녁은 유진이 봐요.",
+      memoExample: "민용 저녁 강의 — 유진이 저녁 챙기기" },
+    "2026-11-27": { rel: "민용 강의", dropoff: "yujin", pickup: "minyong",
+      evening: { kind: "free", who: "yujin" },
+      lectures: [ { start: "10:00", end: "13:00", label: "내일코칭" } ],
+      why: "민용 강의가 13:00에 끝나 하원은 민용이 맡아요.",
+      memoExample: "주말 앞 금요일 — 여분 옷 가방에 넣기" },
     "2026-11-30": { rel: "복직 첫날", dropoff: "minyong", pickup: "minyong",
       evening: { kind: "need", start: "17:30", endLabel: "유진 퇴근 전까지" },
       memoExample: "11/30 유진 복직 첫날! 낮잠이불 챙기기" },
@@ -710,9 +776,31 @@
       memoExample: "주말 나들이 옷 미리 꺼내두기" }
   };
   var NEED_DATES = ["2026-11-30", "2026-12-01"];
+  var DEFAULT_DATE = "2026-11-25";   // 화면을 열면 가장 먼저 보여줄 날 (오늘 11/24의 다음 날)
 
-  /* ── 어린이집 식단 (data/chaeun-meals-2026-11.json 중 11/30) ── */
+  /* ── 어린이집 식단 (data/chaeun-meals-2026-11.json 중 11/25~11/27 · 11/30) ── */
   var MEALS = {
+    "2026-11-25": {
+      morning_snack: "미숫가루, 우유",
+      lunch: ["백미밥", "백순두부찌개", "오리불고기", "양배추코울슬로", "백깍두기"],
+      afternoon_snack: "어묵탕",
+      calories_kcal: 459,
+      protein_g: 22
+    },
+    "2026-11-26": {
+      morning_snack: "씨리얼, 우유",
+      lunch: ["흑미밥", "맑은닭개장", "삼치구이", "청경채나물", "백깍두기"],
+      afternoon_snack: "쌀국수",
+      calories_kcal: 472,
+      protein_g: 23
+    },
+    "2026-11-27": {
+      morning_snack: "경기도과일(배)",
+      lunch: ["백미밥", "얼갈이된장국", "쇠고기당근볶음", "게살파프리카무침", "백깍두기"],
+      afternoon_snack: "고구마유조림",
+      calories_kcal: 547,
+      protein_g: 16
+    },
     "2026-11-30": {
       morning_snack: "경기도과일(배)",
       lunch: ["백미밥", "북엇국", "미니돈가스&소스", "콩나물무침", "백깍두기"],
@@ -724,22 +812,38 @@
   var MEAL_MONTH_NOTE = "12월 식단표 등록 시 자동 반영 예정";
   var PENDING_NOTICE = "민용 님 일정 확인 전 · 등록 대기";
 
-  /* ── 달력 셀: 2026-11-29(일) ~ 2027-01-02(토), 12월 앞뒤 빈 칸 포함 ── */
+  /* ── 달력 셀: 2026-11-23(월) ~ 2027-01-03(일), 월~일 6줄
+      11/23~11/29 · 11/30~12/6 · 12월 나머지 주가 한 줄씩 되게, 11/25 이전은 지난 날로 흐리게 ── */
   var CELLS = (function () {
     var out = [];
-    for (var i = 0; i < 35; i++) {
-      var d = new Date(2026, 10, 29 + i);
+    for (var i = 0; i < 42; i++) {
+      var d = new Date(2026, 10, 23 + i);
       var key = iso(d);
       out.push({
         date: key,
         d: d.getDate(),
         dow: d.getDay(),
         inMonth: d.getMonth() === 11,
-        show: d.getMonth() === 11 || key === "2026-11-29" || key === "2026-11-30"
+        show: key >= "2026-11-23" && key <= "2026-12-31",
+        past: key < DEFAULT_DATE
       });
     }
     return out;
   })();
+
+  /* ── 주간 보기 두 주: 이번 주(11/25~11/29) · 다음 주(11/30~12/6) ── */
+  var WEEKS = [
+    { label: "이번 주", range: "11/25 – 11/29",
+      dates: ["2026-11-25", "2026-11-26", "2026-11-27", "2026-11-28", "2026-11-29"] },
+    { label: "다음 주", range: "11/30 – 12/6",
+      dates: ["2026-11-30", "2026-12-01", "2026-12-02", "2026-12-03", "2026-12-04", "2026-12-05", "2026-12-06"] }
+  ];
+  function weekOf(date) {
+    for (var i = 0; i < WEEKS.length; i++) {
+      if (WEEKS[i].dates.indexOf(date) >= 0) return i;
+    }
+    return -1;
+  }
 
   /* ── 이 기기 캐시 (서버가 닿지 않을 때도 화면이 살아 있게) ── */
   var KEY = "chaeun-care-share-v1";
@@ -747,8 +851,9 @@
     assign: {},      // { "2026-11-30": "minyong" }
     assignMeta: {},  // { "2026-11-30": "2026-11-24T05:30:00Z" }
     memos: {},       // { "2026-11-30": [ { id, text, created_at } ] }
-    current: "2026-11-30",
-    view: "month"
+    current: DEFAULT_DATE,
+    view: "month",
+    week: 0
   };
 
   function normMemo(m, i) {
@@ -1107,6 +1212,11 @@
   function renderCalendar() {
     $("calGrid").innerHTML = CELLS.map(function (c) {
       if (!c.show) return '<span class="cell blank" aria-hidden="true"></span>';
+      /* 지난 날(11/25 이전)은 흐리게만 보여주고 고를 수는 없어요 */
+      if (c.past) {
+        return '<span class="cell past" aria-hidden="true"><span class="n">' + c.d +
+          '</span><span class="slot"></span></span>';
+      }
       var st = statusOf(c.date);
       var sel = c.date === state.current;
       var ind;
@@ -1125,21 +1235,30 @@
     }).join("");
   }
 
-  /* ── 주간(5일) 보기 ── */
+  /* ── 주간 보기: 이번 주 / 다음 주 고르기 ── */
+  function renderWeekSwitch() {
+    $("weekSwitch").innerHTML = WEEKS.map(function (w, i) {
+      return '<button type="button" data-week="' + i + '" aria-pressed="' + (i === state.week) + '">' +
+        "<b>" + w.label + "</b><span>" + w.range + "</span></button>";
+    }).join("");
+  }
+
+  /* ── 주간 탭 (고른 주의 날짜만) ── */
   function renderTabs() {
-    var dates = Object.keys(BASE).sort();
-    $("tabs").innerHTML = dates.map(function (date) {
+    var days = WEEKS[state.week].dates;
+    $("tabs").className = "tabs" + (days.length > 5 ? " dense" : "");
+    $("tabs").innerHTML = days.map(function (date) {
       var day = BASE[date];
       var selected = date === state.current;
       var flag = "";
-      if (day.evening.kind === "need") {
+      if (day && day.evening.kind === "need") {
         flag = state.assign[date]
           ? '<span class="flag ok" aria-hidden="true"></span>'
           : '<span class="flag" aria-hidden="true"></span>';
       }
       var label = mdw(date) + (state.assign[date]
         ? ", " + MEMBERS[state.assign[date]].name + " 돌봄 확정"
-        : (day.evening.kind === "need" ? ", 돌봄 미정" : ""));
+        : (day && day.evening.kind === "need" ? ", 돌봄 미정" : ""));
       return '<button class="tab" type="button" aria-pressed="' + selected + '" ' +
         'aria-label="' + label + '" data-date="' + date + '">' +
         '<span class="w">' + WD[parseDate(date).getDay()] + "</span>" +
@@ -1155,7 +1274,7 @@
     for (var i = 0; i < segs.length; i++) {
       segs[i].setAttribute("aria-pressed", String(segs[i].getAttribute("data-view") === state.view));
     }
-    if (state.view === "month") renderCalendar(); else renderTabs();
+    if (state.view === "month") { renderCalendar(); } else { renderWeekSwitch(); renderTabs(); }
   }
 
   /* ── 날짜 패널 ── */
@@ -1170,6 +1289,22 @@
     else if (st === "weekend") rel = '<span class="rel rel-quiet">주말</span>';
     else if (st === "pending") rel = '<span class="rel rel-quiet">등록 대기</span>';
     parts.push('<div class="day-head"><h2>' + longDate(date) + " (" + WD[parseDate(date).getDay()] + ")</h2>" + rel + "</div>");
+
+    /* 민용 님 강의 일정 — 등·하원을 누가 맡는지 이해되게 먼저 보여줘요 */
+    if (day && day.lectures && day.lectures.length) {
+      parts.push('<section class="card sched" aria-label="민용 일정">' +
+        '<div class="card-head wrap"><span class="card-title"><span class="ico">📚</span>민용 일정</span>' +
+        '<span class="time-badge">강의</span></div>' +
+        '<ul class="sched-list">' +
+          day.lectures.map(function (l) {
+            return "<li><span class=\"sched-time\">" + l.start + "–" + l.end + "</span>" +
+              '<span class="sched-name">' + l.label + "</span>" +
+              (l.note ? '<span class="sched-note">' + l.note + "</span>" : "") + "</li>";
+          }).join("") +
+        "</ul>" +
+        (day.why ? '<p class="care-note">' + day.why + "</p>" : "") +
+        "</section>");
+    }
 
     if (st === "weekend") {
       parts.push('<section class="card care-free" aria-label="주말">' +
@@ -1398,8 +1533,23 @@
     var view = btn.getAttribute("data-view");
     if (view === state.view) return;
     state.view = view;
-    /* 주간 보기는 11/30~12/4만 보여줘서, 다른 날짜를 보고 있었다면 첫 날로 맞춰요 */
-    if (view === "week" && !BASE[state.current]) state.current = "2026-11-30";
+    /* 주간 보기는 이번 주·다음 주만 보여줘서, 다른 주를 보고 있었다면 이번 주 첫 날로 맞춰요 */
+    if (view === "week") {
+      var w = weekOf(state.current);
+      if (w < 0) { w = 0; state.current = WEEKS[0].dates[0]; }
+      state.week = w;
+    }
+    renderAll();
+  });
+
+  /* 주간 보기에서 이번 주 ↔ 다음 주 */
+  $("weekSwitch").addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-week]");
+    if (!btn) return;
+    var i = +btn.getAttribute("data-week");
+    if (i === state.week || !WEEKS[i]) return;
+    state.week = i;
+    if (WEEKS[i].dates.indexOf(state.current) < 0) state.current = WEEKS[i].dates[0];
     renderAll();
   });
 
@@ -1456,8 +1606,9 @@
 
   /* 공용 DB 를 실수로 날리지 않도록 '보고 있던 화면'만 처음으로 되돌립니다 */
   $("resetBtn").addEventListener("click", function () {
-    state.current = "2026-11-30";
+    state.current = DEFAULT_DATE;
     state.view = "month";
+    state.week = 0;
     renderAll();
     try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); }
     toast("화면만 처음으로 돌렸어요 · 가족 찜·메모는 그대로예요");
