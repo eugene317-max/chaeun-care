@@ -108,6 +108,35 @@
   .legend .tbd .dot{background:#fff;border:2px dashed var(--red);box-shadow:none}
   .legend .brk{flex-basis:100%;width:100%;height:0;margin:-2px 0}
 
+  /* ───── 실시간 공유 상태 ───── */
+  .live-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:15px 0 0}
+  .live-badge{
+    display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:999px;
+    font-size:13.5px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;
+    background:#E9F8F2;color:#176A54;border:1.5px solid #B4E5D5;
+  }
+  .live-badge .live-dot{
+    width:8px;height:8px;border-radius:50%;background:#2FA98A;flex:none;
+    box-shadow:0 0 0 3px rgba(47,169,138,.14);animation:livePulse 2.4s ease-in-out infinite;
+  }
+  .live-badge[data-state="syncing"]{background:#EAF2FF;color:#2558A8;border-color:#C6DAFB}
+  .live-badge[data-state="syncing"] .live-dot{background:#4C8DF6;box-shadow:0 0 0 3px rgba(76,141,246,.16)}
+  .live-badge[data-state="offline"]{background:#F7EFE3;color:#8A6A3F;border-color:#E6D3BE}
+  .live-badge[data-state="offline"] .live-dot{background:#D8A24A;box-shadow:0 0 0 3px rgba(216,162,74,.16);animation:none}
+  .live-badge[data-state="init"]{background:#F5EADF;color:#8A6A3F;border-color:#E6D3BE}
+  .live-badge[data-state="init"] .live-dot{background:#C0AE9C;animation:none}
+  @keyframes livePulse{0%,100%{opacity:1}50%{opacity:.40}}
+  .refresh-btn{
+    margin-left:auto;display:inline-flex;align-items:center;gap:5px;
+    min-height:36px;padding:7px 14px;border-radius:999px;
+    border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);
+    font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;
+  }
+  .refresh-btn:hover{background:#FFFBF6}
+  .refresh-btn:focus-visible{outline:3px solid #F7B9A6;outline-offset:2px}
+  .sync-note{margin:8px 2px 0;font-size:13.5px;font-weight:600;color:#A08560;line-height:1.55}
+  .sync-note[hidden]{display:none}
+
   /* ───── 알림 배너 ───── */
   .alert{
     position:relative;margin:18px 0 4px;padding:16px 18px 16px 16px;
@@ -260,14 +289,31 @@
     background:var(--mint-soft);color:#166A54;border:1.5px solid #B4E5D5;
     font-size:15px;font-weight:800;
   }
-  .done-msg{margin:11px 0 13px;font-size:16px;font-weight:700;color:#256B58;word-break:keep-all}
-  .done-actions{display:flex;gap:9px}
-  .btn-sm{
-    flex:1;min-height:48px;border-radius:14px;border:1.5px solid var(--line);
-    background:#fff;color:var(--ink-soft);font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;
+  .done-msg{margin:11px 0 6px;font-size:16px;font-weight:700;color:#256B58;word-break:keep-all}
+  .done-when{margin:0 0 13px;font-size:14.5px;font-weight:700;color:#5C8F7E;word-break:keep-all}
+
+  /* 찜 완료 카드 — 가족 누구나 한눈에 누르는 큰 버튼 2개 */
+  .done-actions{display:flex;flex-direction:column;gap:9px}
+  .btn-act{
+    display:flex;align-items:center;justify-content:center;gap:9px;
+    width:100%;min-height:58px;padding:14px 16px;border-radius:17px;
+    font-family:inherit;font-size:19px;font-weight:800;letter-spacing:-.02em;
+    cursor:pointer;transition:transform .1s ease, box-shadow .15s ease, filter .15s ease;
   }
-  .btn-sm:hover{background:#FFFBF6}
-  .btn-sm:focus-visible{outline:3px solid #F7B9A6;outline-offset:2px}
+  .btn-act .ico{font-size:19px;line-height:1}
+  .btn-act:active{transform:scale(.985)}
+  .btn-act:focus-visible{outline:3px solid #F7B9A6;outline-offset:3px}
+  .btn-change{
+    border:none;color:#fff;
+    background:linear-gradient(135deg,#5C97F7 0%,#4C8DF6 100%);
+    box-shadow:0 8px 18px rgba(76,141,246,.28);
+  }
+  .btn-change:hover{filter:brightness(1.04)}
+  .btn-cancel{
+    background:#fff;color:var(--red);border:2px solid #F7B9B9;
+    box-shadow:var(--shadow-sm);
+  }
+  .btn-cancel:hover{background:#FFF6F6}
 
   .care-free{border:1.5px solid var(--line);background:#FFFDF9}
   .care-free .free-msg{margin:0;font-size:16px;font-weight:600;color:var(--ink-mute)}
@@ -341,11 +387,8 @@
     display:flex;gap:10px;align-items:flex-start;
     background:#fff;border:1.5px solid var(--line);border-radius:15px;padding:12px 13px;
   }
-  .memo-item .who{
-    flex:none;font-size:13px;font-weight:800;color:#fff;background:var(--peach);
-    padding:3px 9px;border-radius:999px;margin-top:2px;
-  }
-  .memo-item .txt{font-size:16px;font-weight:600;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere}
+  .memo-item .txt{flex:1;min-width:0;font-size:16px;font-weight:600;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere}
+  .memo-item .at{flex:none;font-size:12.5px;font-weight:700;color:#B7A695;margin-top:3px;white-space:nowrap}
   .memo-item .del{
     margin-left:auto;flex:none;border:none;background:transparent;color:var(--ink-mute);
     font-size:20px;line-height:1;cursor:pointer;padding:2px 4px;border-radius:8px;
@@ -520,6 +563,14 @@
       <li><span class="dot" style="background:var(--m-uncle)"></span>이모부</li>
       <li class="tbd"><span class="dot"></span>미정</li>
     </ul>
+
+    <div class="live-bar">
+      <span class="live-badge" id="liveBadge" data-state="init" title="가족 공유 서버 연결 준비 중">
+        <span class="live-dot" aria-hidden="true"></span><span id="liveText">가족 실시간 공유 준비 중</span>
+      </span>
+      <button class="refresh-btn" type="button" id="refreshBtn">🔄 새로고침</button>
+    </div>
+    <p class="sync-note" id="syncNote" hidden></p>
   </header>
 
   <div class="alert" id="alert" role="status" aria-live="polite">
@@ -587,12 +638,12 @@
 
   <div class="howto">
     <span class="ico">💡</span>
-    <p style="margin:0">돌봄이 비어 있는 날은 <b>찜하기</b>를 눌러 누가 맡을지 정해주세요. 정해지면 이 화면이 바로 바뀌어요.</p>
+    <p style="margin:0">돌봄이 비어 있는 날은 <b>찜하기</b>를 눌러 누가 맡을지 정해주세요. 정해진 뒤에도 <b>다른 사람으로 변경</b>·<b>찜 취소하기</b>로 언제든 바꿀 수 있고, 가족 모두에게 바로 보여요.</p>
   </div>
 
   <footer class="foot">
-    <p class="foot-note">우리 가족 <b>6명</b>이 함께 보는 화면이에요<br>문의는 어린이집 <b>070-8632-3400</b></p>
-    <button class="reset" type="button" id="resetBtn">처음 상태로 되돌리기</button>
+    <p class="foot-note">우리 가족 <b>6명</b>이 함께 보는 화면이에요<br>찜·메모는 가족 모두에게 실시간으로 보여요<br>문의는 어린이집 <b>070-8632-3400</b></p>
+    <button class="reset" type="button" id="resetBtn">화면 처음으로 되돌리기</button>
   </footer>
 </div>
 
@@ -690,9 +741,24 @@
     return out;
   })();
 
-  /* ── 저장 ── */
+  /* ── 이 기기 캐시 (서버가 닿지 않을 때도 화면이 살아 있게) ── */
   var KEY = "chaeun-care-share-v1";
-  var state = { assign: {}, memos: {}, current: "2026-11-30", view: "month" };
+  var state = {
+    assign: {},      // { "2026-11-30": "minyong" }
+    assignMeta: {},  // { "2026-11-30": "2026-11-24T05:30:00Z" }
+    memos: {},       // { "2026-11-30": [ { id, text, created_at } ] }
+    current: "2026-11-30",
+    view: "month"
+  };
+
+  function normMemo(m, i) {
+    if (!m || typeof m !== "object") return null;
+    var text = String(m.text == null ? "" : m.text).trim();
+    if (!text) return null;
+    var id = m.id ? String(m.id) : "local-" + String(m.at || Date.now()) + "-" + i;
+    var created = m.created_at || (m.at ? new Date(m.at).toISOString() : new Date().toISOString());
+    return { id: id, text: text, created_at: created };
+  }
 
   function load() {
     try {
@@ -704,12 +770,258 @@
       Object.keys(assign).forEach(function (k) {
         if (MEMBERS[assign[k]]) state.assign[k] = assign[k];
       });
-      state.memos = p.memos || {};
+      var meta = p.assignMeta || {};
+      Object.keys(meta).forEach(function (k) { if (meta[k]) state.assignMeta[k] = meta[k]; });
+      var memos = p.memos || {};
+      Object.keys(memos).forEach(function (k) {
+        var arr = memos[k];
+        if (!arr || !arr.length) return;
+        var out = [];
+        for (var i = 0; i < arr.length; i++) {
+          var m = normMemo(arr[i], i);
+          if (m) out.push(m);
+        }
+        if (out.length) state.memos[k] = out;
+      });
     } catch (e) { /* 저장소를 못 쓰는 환경에서는 메모리 상태로만 동작 */ }
   }
+
   function save() {
-    try { localStorage.setItem(KEY, JSON.stringify({ assign: state.assign, memos: state.memos })); }
-    catch (e) {}
+    try {
+      localStorage.setItem(KEY, JSON.stringify({
+        assign: state.assign, assignMeta: state.assignMeta, memos: state.memos
+      }));
+    } catch (e) {}
+  }
+
+  /* ── 시각 표기 ── */
+  function fmtStamp(v) {
+    if (!v) return "";
+    var d = new Date(v);
+    if (isNaN(d.getTime())) return "";
+    return (d.getMonth() + 1) + "/" + d.getDate() + " " + pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+  }
+  function hhmm(ts) {
+    var d = new Date(ts);
+    return pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+  }
+
+  /* ───────────────────────────────────────────
+     가족 실시간 공유 — Supabase REST, fetch 만 사용
+       읽기: GET  chaeun_care_assignments / chaeun_care_memos
+       쓰기: POST(upsert) · DELETE
+       15초 자동 동기화 · 화면으로 돌아올 때 동기화
+     ─────────────────────────────────────────── */
+  var SUPA = {
+    url: "https://sudejksvupohajeupyct.supabase.co",
+    key: "sb_publishable_dDXoPspK-jtINs4TBHKHLQ_i0oRoNhH",
+    assign: "chaeun_care_assignments",
+    memos: "chaeun_care_memos"
+  };
+  var net = {
+    mode: "init",   // init | syncing | live | offline
+    lastSync: 0,
+    busy: false,
+    again: false,
+    pending: [],    // 아직 서버에 못 보낸 변경
+    sig: "",
+    timer: null,
+    lastTry: 0
+  };
+
+  function api(path, opts) {
+    var o = opts || {};
+    var headers = { "apikey": SUPA.key, "Accept": "application/json" };
+    if (o.body !== undefined) headers["Content-Type"] = "application/json";
+    if (o.prefer) headers["Prefer"] = o.prefer;
+    return fetch(SUPA.url + "/rest/v1/" + path, {
+      method: o.method || "GET",
+      headers: headers,
+      body: o.body === undefined ? undefined : JSON.stringify(o.body),
+      cache: "no-store"
+    }).then(function (res) {
+      if (!res.ok) {
+        return res.text().then(function (t) {
+          var msg = "";
+          try { msg = (JSON.parse(t) || {}).message || ""; } catch (e) { msg = ""; }
+          var err = new Error(msg || ("HTTP " + res.status));
+          err.status = res.status;
+          throw err;
+        });
+      }
+      if (o.method === "DELETE") return null;
+      return res.text().then(function (t) {
+        if (!t) return null;
+        try { return JSON.parse(t); } catch (e) { return null; }
+      });
+    });
+  }
+
+  function setLive(mode, err) {
+    var badge = $("liveBadge"), txt = $("liveText"), note = $("syncNote");
+    net.mode = mode;
+    if (!badge || !txt) return;
+    badge.setAttribute("data-state", mode);
+    if (mode === "syncing") txt.textContent = "가족 화면 맞추는 중…";
+    else if (mode === "live") txt.textContent = "가족 실시간 공유 중";
+    else if (mode === "offline") txt.textContent = "연결 대기 · 이 기기에 저장 중";
+    else txt.textContent = "가족 실시간 공유 준비 중";
+    badge.title = net.lastSync
+      ? "마지막 동기화 " + hhmm(net.lastSync)
+      : (err && err.message ? String(err.message) : "");
+    if (note) {
+      if (mode === "offline") {
+        note.hidden = false;
+        note.textContent = "공유 서버에 아직 연결하지 못했어요. 지금 누른 찜·메모는 이 기기에만 저장되고, 연결되면 자동으로 가족에게 반영돼요.";
+      } else {
+        note.hidden = true;
+        note.textContent = "";
+      }
+    }
+  }
+
+  function sendOp(op) {
+    if (op.k === "assign") {
+      return api(SUPA.assign + "?on_conflict=date", {
+        method: "POST",
+        prefer: "resolution=merge-duplicates,return=representation",
+        body: [{ date: op.date, member: op.member, updated_at: new Date().toISOString() }]
+      });
+    }
+    if (op.k === "clear") {
+      return api(SUPA.assign + "?date=eq." + encodeURIComponent(op.date), {
+        method: "DELETE", prefer: "return=minimal"
+      });
+    }
+    if (op.k === "memoAdd") {
+      return api(SUPA.memos, {
+        method: "POST", prefer: "return=representation",
+        body: [{ id: op.id, date: op.date, text: op.text, created_at: op.created_at }]
+      });
+    }
+    if (op.k === "memoDel") {
+      return api(SUPA.memos + "?id=eq." + encodeURIComponent(op.id), {
+        method: "DELETE", prefer: "return=minimal"
+      });
+    }
+    return Promise.resolve(null);
+  }
+
+  function flushPending() {
+    if (!net.pending.length) return Promise.resolve();
+    var op = net.pending[0];
+    return sendOp(op).then(function () {
+      net.pending.shift();
+      return flushPending();
+    });
+  }
+
+  function queue(op) {
+    /* 같은 날짜의 이전 대기 작업은 최신 것만 남겨요 */
+    if (op.k === "assign" || op.k === "clear") {
+      net.pending = net.pending.filter(function (p) {
+        return !((p.k === "assign" || p.k === "clear") && p.date === op.date);
+      });
+    }
+    net.pending.push(op);
+    if (net.pending.length > 30) net.pending = net.pending.slice(-30);
+    syncNow();
+  }
+
+  function applyServer(assignRows, memoRows) {
+    var assign = {}, meta = {}, memos = {};
+    (assignRows || []).forEach(function (r) {
+      if (!r || !r.date || !MEMBERS[r.member]) return;
+      assign[r.date] = r.member;
+      if (r.updated_at) meta[r.date] = r.updated_at;
+    });
+    (memoRows || []).forEach(function (r, i) {
+      if (!r || !r.date) return;
+      var m = normMemo(r, i);
+      if (!m) return;
+      if (!memos[r.date]) memos[r.date] = [];
+      memos[r.date].push(m);
+    });
+    var sig = JSON.stringify([assign, meta, memos]);
+    if (sig === net.sig) return false;
+    net.sig = sig;
+    state.assign = assign;
+    state.assignMeta = meta;
+    state.memos = memos;
+    save();
+    renderAll();
+    return true;
+  }
+
+  function syncNow(opts) {
+    var force = !!(opts && opts.force);
+    var now = Date.now();
+    if (net.busy) { net.again = true; return Promise.resolve("busy"); }
+    if (!force && now - net.lastTry < 2500) return Promise.resolve("skip");
+    net.lastTry = now;
+    net.busy = true;
+    if (opts && opts.showBusy) setLive("syncing");
+    return flushPending()
+      .catch(function () { /* 못 보낸 변경은 남겨두고 다음 주기에 다시 시도 */ })
+      .then(function () {
+        /* 아직 못 올린 변경이 있으면 서버 값으로 덮어쓰지 않아요 */
+        if (net.pending.length) throw new Error("pending");
+        return Promise.all([
+          api(SUPA.assign + "?select=*"),
+          api(SUPA.memos + "?select=*&order=created_at.desc")
+        ]);
+      })
+      .then(function (rows) {
+        applyServer(rows[0], rows[1]);
+        net.lastSync = Date.now();
+        setLive("live");
+        return "live";
+      })
+      .catch(function (err) {
+        setLive("offline", err);
+        return "offline";
+      })
+      .then(function (r) {
+        net.busy = false;
+        if (net.again) { net.again = false; setTimeout(function () { syncNow(); }, 400); }
+        return r;
+      });
+  }
+
+  /* ── 쓰기: 화면 먼저, 서버는 따라오게 ── */
+  function doAssign(date, member) {
+    if (!MEMBERS[member]) return;
+    state.assign[date] = member;
+    state.assignMeta[date] = new Date().toISOString();
+    save(); renderAll();
+    queue({ k: "assign", date: date, member: member });
+  }
+  function doUnassign(date) {
+    delete state.assign[date];
+    delete state.assignMeta[date];
+    save(); renderAll();
+    queue({ k: "clear", date: date });
+  }
+  function newId() {
+    try {
+      if (window.crypto && window.crypto.randomUUID) return window.crypto.randomUUID();
+    } catch (e) {}
+    return "m-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  }
+  function doAddMemo(date, text) {
+    if (!state.memos[date]) state.memos[date] = [];
+    var memo = { id: newId(), text: text, created_at: new Date().toISOString() };
+    state.memos[date].unshift(memo);
+    save(); renderMemo();
+    queue({ k: "memoAdd", id: memo.id, date: date, text: memo.text, created_at: memo.created_at });
+  }
+  function doDelMemo(date, id) {
+    var list = state.memos[date] || [];
+    var next = list.filter(function (m) { return m.id !== id; });
+    if (next.length === list.length) return;
+    if (next.length) state.memos[date] = next; else delete state.memos[date];
+    save(); renderMemo();
+    queue({ k: "memoDel", id: id });
   }
 
   /* ── 도우미 ── */
@@ -893,13 +1205,17 @@
               '찜하기</button>' +
             "</section>");
         } else {
+          var when = state.assignMeta[date] ? fmtStamp(state.assignMeta[date]) + "에 정했어요" : "가족 누구든 바꿀 수 있어요";
           parts.push('<section class="card care-done" aria-label="저녁 돌봄 확정">' + head +
             '<div class="done-row"><span class="badge-done"><span aria-hidden="true">✓</span> 찜 완료</span>' +
             chip(assignedTo, true) + "</div>" +
             '<p class="done-msg">' + MEMBERS[assignedTo].subj + "가 " + ev.start + "부터<br>" + ev.endLabel + " 채은이를 봐요.</p>" +
+            '<p class="done-when">' + when + "</p>" +
             '<div class="done-actions">' +
-              '<button class="btn-sm" type="button" data-need="' + date + '">변경</button>' +
-              '<button class="btn-sm" type="button" data-unassign="' + date + '">취소</button>' +
+              '<button class="btn-act btn-change" type="button" data-need="' + date + '">' +
+                '<span class="ico" aria-hidden="true">🔄</span>다른 사람으로 변경</button>' +
+              '<button class="btn-act btn-cancel" type="button" data-unassign="' + date + '">' +
+                '<span class="ico" aria-hidden="true">✕</span>찜 취소하기</button>' +
             "</div></section>");
         }
       } else {
@@ -965,10 +1281,11 @@
       return;
     }
     $("memoEmpty").hidden = true;
-    $("memoList").innerHTML = list.map(function (m, i) {
-      return '<li class="memo-item"><span class="who">' + m.who + "</span>" +
+    $("memoList").innerHTML = list.map(function (m) {
+      return '<li class="memo-item">' +
         '<span class="txt">' + escapeHtml(m.text) + "</span>" +
-        '<button class="del" type="button" data-del="' + i + '" aria-label="메모 삭제">×</button></li>';
+        '<span class="at">' + escapeHtml(fmtStamp(m.created_at)) + "</span>" +
+        '<button class="del" type="button" data-del="' + escapeHtml(m.id) + '" aria-label="메모 삭제">×</button></li>';
     }).join("");
   }
   function escapeHtml(s) {
@@ -1069,9 +1386,9 @@
     var un = e.target.closest("[data-unassign]");
     if (un) {
       var date = un.getAttribute("data-unassign");
-      delete state.assign[date];
-      save(); renderAll();
-      toast("돌봄을 다시 미정으로 돌렸어요");
+      if (!state.assign[date]) return;
+      doUnassign(date);
+      toast("찜을 취소했어요 · 다시 미정이에요");
     }
   });
 
@@ -1080,9 +1397,12 @@
     if (!btn) return;
     var date = btn.getAttribute("data-date");
     var m = btn.getAttribute("data-m");
-    state.assign[date] = m;
-    save(); closeSheet(); renderAll();
-    toast(MEMBERS[m].subj + " 돌봄을 맡았어요 ✓");
+    var prev = state.assign[date];
+    closeSheet();
+    doAssign(date, m);
+    toast(prev && prev !== m
+      ? MEMBERS[prev].name + " → " + MEMBERS[m].name + "로 바꿨어요 ✓"
+      : MEMBERS[m].subj + " 돌봄을 맡았어요 ✓");
   });
 
   $("sheetCancel").addEventListener("click", closeSheet);
@@ -1096,30 +1416,28 @@
     var input = $("memoInput");
     var text = input.value.trim();
     if (!text) { input.focus(); return; }
-    var date = state.current;
-    if (!state.memos[date]) state.memos[date] = [];
-    state.memos[date].unshift({ text: text, who: "유진", at: Date.now() });
+    doAddMemo(state.current, text);
     input.value = "";
-    save(); renderMemo();
-    toast("메모를 남겼어요");
+    toast("메모를 남겼어요 · 가족에게 바로 보여요");
   });
 
   $("memoList").addEventListener("click", function (e) {
     var del = e.target.closest("[data-del]");
     if (!del) return;
-    var i = parseInt(del.getAttribute("data-del"), 10);
-    var date = state.current;
-    if (state.memos[date]) {
-      state.memos[date].splice(i, 1);
-      save(); renderMemo();
-    }
+    var id = del.getAttribute("data-del");
+    if (!id) return;
+    if (!window.confirm("이 메모를 지울까요?\n가족 모두에게서 사라져요.")) return;
+    doDelMemo(state.current, id);
+    toast("메모를 지웠어요");
   });
 
+  /* 공용 DB 를 실수로 날리지 않도록 '보고 있던 화면'만 처음으로 되돌립니다 */
   $("resetBtn").addEventListener("click", function () {
-    state.assign = {}; state.memos = {};
-    state.current = "2026-11-30"; state.view = "month";
-    save(); renderAll();
-    toast("처음 상태로 되돌렸어요");
+    state.current = "2026-11-30";
+    state.view = "month";
+    renderAll();
+    try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); }
+    toast("화면만 처음으로 돌렸어요 · 가족 찜·메모는 그대로예요");
   });
 
   /* 엔터(한 줄 입력)로 저장 */
@@ -1130,8 +1448,31 @@
     }
   });
 
+  /* ── 새로고침 버튼 ── */
+  $("refreshBtn").addEventListener("click", function () {
+    if (net.busy) { net.again = true; toast("곧 가족 화면으로 맞춰질 거예요"); return; }
+    syncNow({ force: true, showBusy: true }).then(function (r) {
+      if (r === "live") toast("가족 화면을 새로 맞췄어요");
+      else if (r === "offline") toast("아직 연결되지 않았어요 · 이 기기에 저장 중이에요");
+    });
+  });
+
+  /* ── 시작: 캐시로 먼저 그리고, 서버 값으로 맞춘 뒤 15초마다 동기화 ── */
   load();
   renderAll();
+  setLive("init");
+  syncNow({ force: true });
+
+  net.timer = setInterval(function () {
+    if (document.hidden) return;
+    syncNow();
+  }, 15000);
+
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) syncNow({ force: true });
+  });
+  window.addEventListener("focus", function () { syncNow(); });
+  window.addEventListener("online", function () { syncNow({ force: true }); });
 })();
 </script>
 </body>
