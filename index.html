@@ -1301,12 +1301,14 @@
     renderPanel();
     renderMeal();
     renderMemo();
+    /* 시트를 열어둔 채 가족이 다른 사람을 정했으면 라벨도 같이 맞춰요 */
+    if (sheetDate && $("sheet").classList.contains("open")) renderPickList(sheetDate);
   }
 
   /* ── 바텀시트 ── */
   var lastFocus = null;
-  function openSheet(date) {
-    lastFocus = document.activeElement;
+  var sheetDate = null;
+  function renderPickList(date) {
     var info = BASE[date];
     $("sheetSub").textContent = mdw(date) + " " + (info ? timeRange(info.evening) : "돌봄 시간 확인 전");
     $("pickList").innerHTML = PICK_ORDER.map(function (id) {
@@ -1318,6 +1320,11 @@
         '<span><span class="nm">' + m.name + "</span>" + roleLine + "</span>" +
         '<span class="go">' + pick + "</span></button>";
     }).join("");
+  }
+  function openSheet(date) {
+    lastFocus = document.activeElement;
+    sheetDate = date;
+    renderPickList(date);
     $("sheet").classList.add("open");
     $("sheet").setAttribute("aria-hidden", "false");
     $("sheetBg").classList.add("open");
@@ -1401,7 +1408,7 @@
     closeSheet();
     doAssign(date, m);
     toast(prev && prev !== m
-      ? MEMBERS[prev].name + " → " + MEMBERS[m].name + "로 바꿨어요 ✓"
+      ? MEMBERS[prev].name + " → " + MEMBERS[m].name + ", 바꿨어요 ✓"
       : MEMBERS[m].subj + " 돌봄을 맡았어요 ✓");
   });
 
