@@ -1818,8 +1818,8 @@
   var ROLE_OPTIONS = [
     { id: "yujin",   label: "엄마",       sub: "유진",     emoji: "👩", parent: true },
     { id: "minyong", label: "아빠",       sub: "민용",     emoji: "👨", parent: true },
-    { id: "grandma", label: "외할머니",   sub: "할머니",   emoji: "👵", parent: false },
-    { id: "grandpa", label: "외할아버지", sub: "할아버지", emoji: "👴", parent: false },
+    { id: "grandma", label: "외할머니",   sub: "",         emoji: "👵", parent: false },
+    { id: "grandpa", label: "외할아버지", sub: "",         emoji: "👴", parent: false },
     { id: "aunt",    label: "이모",       sub: "",         emoji: "👩", parent: false },
     { id: "uncle",   label: "이모부",     sub: "",         emoji: "👨", parent: false }
   ];
@@ -2104,7 +2104,7 @@
     if (!r.parent) { saveRole(roleId); return; }
     auth.pendingRole = roleId;
     $("roleList").hidden = true;
-    $("passTitle").textContent = r.label + " (" + r.sub + ") 확인 코드 4자리";
+    $("passTitle").textContent = r.label + (r.sub ? " (" + r.sub + ")" : "") + " 확인 코드 4자리";
     $("passWrap").hidden = false;
     $("passErr").hidden = true;
     $("passInput").value = "";
