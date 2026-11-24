@@ -826,8 +826,19 @@
     pending: [],    // 아직 서버에 못 보낸 변경
     sig: "",
     timer: null,
+    retry: null,
     lastTry: 0
   };
+
+  /* 몰아서 부를 때(클릭 연속·화면 복귀) 잠시 쉬었다가 한 번에 맞추되,
+     아직 못 보낸 변경이 있으면 반드시 곲 다시 시도해요 */
+  function scheduleSync(delay) {
+    if (net.retry) return;
+    net.retry = setTimeout(function () {
+      net.retry = null;
+      syncNow({ force: true });
+    }, Math.max(delay || 0, 0));
+  }
 
   function api(path, opts) {
     var o = opts || {};
@@ -925,7 +936,8 @@
     }
     net.pending.push(op);
     if (net.pending.length > 30) net.pending = net.pending.slice(-30);
-    syncNow();
+    /* 사용자가 누른 변경은 쉬지 않고 바로 서버로 보냅니다 */
+    syncNow({ force: true });
   }
 
   function applyServer(assignRows, memoRows) {
@@ -957,7 +969,10 @@
     var force = !!(opts && opts.force);
     var now = Date.now();
     if (net.busy) { net.again = true; return Promise.resolve("busy"); }
-    if (!force && now - net.lastTry < 2500) return Promise.resolve("skip");
+    if (!force && now - net.lastTry < 2500) {
+      if (net.pending.length) scheduleSync(2500 - (now - net.lastTry));
+      return Promise.resolve("skip");
+    }
     net.lastTry = now;
     net.busy = true;
     if (opts && opts.showBusy) setLive("syncing");
@@ -979,6 +994,7 @@
       })
       .catch(function (err) {
         setLive("offline", err);
+        if (net.pending.length) scheduleSync(15000);
         return "offline";
       })
       .then(function (r) {
