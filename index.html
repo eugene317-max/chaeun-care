@@ -584,6 +584,113 @@
   }
   .sched .care-note{margin:11px 0 0}
 
+  /* ───── 카카오 로그인 · 가족 역할 ───── */
+  .authbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0 0}
+  .authbar[hidden]{display:none}
+  .kakao-btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    min-height:50px;padding:12px 22px;border:none;border-radius:15px;
+    background:#FEE500;color:#191919;font-family:inherit;font-size:16.5px;font-weight:800;
+    letter-spacing:-.02em;cursor:pointer;box-shadow:0 4px 12px rgba(180,145,0,.22);
+    transition:filter .15s ease, transform .1s ease;
+  }
+  .kakao-btn:hover{filter:brightness(1.03)}
+  .kakao-btn:active{transform:scale(.985)}
+  .kakao-btn:focus-visible{outline:3px solid #F7B9A6;outline-offset:2px}
+  .auth-hint{flex:1 1 190px;min-width:0;margin:0;font-size:13px;font-weight:600;color:var(--ink-mute);line-height:1.5}
+  .rolepill{
+    display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:999px;
+    background:#fff;border:1.5px solid var(--line);font-size:14px;font-weight:800;
+    color:var(--ink-soft);white-space:nowrap;max-width:100%;overflow:hidden;
+  }
+  .rolepill .em{font-size:15px;line-height:1}
+  .rolepill .st{width:7px;height:7px;border-radius:50%;background:var(--mint);flex:none;
+    box-shadow:0 0 0 3px rgba(47,169,138,.15)}
+  .rolepill.none .st{background:#D8A24A;box-shadow:0 0 0 3px rgba(216,162,74,.18)}
+  .auth-mini{
+    border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);
+    font-family:inherit;font-size:13px;font-weight:800;padding:7px 12px;border-radius:999px;
+    min-height:34px;cursor:pointer;
+  }
+  .auth-mini:hover{background:#FFFBF6}
+  .auth-mini:focus-visible{outline:3px solid #F7B9A6;outline-offset:2px}
+  .auth-note{margin:9px 2px 0;font-size:13.5px;font-weight:600;color:#A08560;line-height:1.55}
+  .auth-note[hidden]{display:none}
+
+  /* 역할 고르기 모달 */
+  .modal-bg{position:fixed;inset:0;z-index:70;background:rgba(60,40,28,.48);
+    opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .modal-bg.open{opacity:1;pointer-events:auto}
+  .modal{
+    position:fixed;left:50%;top:50%;z-index:71;width:min(412px,calc(100% - 26px));
+    transform:translate(-50%,-46%);opacity:0;pointer-events:none;
+    background:linear-gradient(180deg,#FFFDFA 0%,#FFF8F1 100%);border-radius:26px;
+    padding:20px 18px calc(16px + env(safe-area-inset-bottom));
+    box-shadow:0 24px 60px rgba(70,40,25,.3);
+    max-height:calc(100dvh - 32px);overflow-y:auto;-webkit-overflow-scrolling:touch;
+    transition:opacity .2s ease, transform .26s cubic-bezier(.22,.9,.3,1);
+  }
+  .modal.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+  .modal h3{margin:0 0 5px;font-size:22px;font-weight:800;letter-spacing:-.03em}
+  .modal-sub{margin:0 0 15px;font-size:14.5px;font-weight:600;color:var(--ink-mute);line-height:1.5}
+  .role-list{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .role-list[hidden]{display:none}
+  .role-opt{
+    display:flex;align-items:center;gap:9px;min-height:62px;padding:10px 12px;border-radius:16px;
+    border:1.5px solid var(--line);background:#fff;cursor:pointer;font-family:inherit;text-align:left;
+    transition:transform .1s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .role-opt:hover{box-shadow:var(--shadow-sm);transform:translateY(-1px)}
+  .role-opt:focus-visible{outline:3px solid #F7B9A6;outline-offset:2px}
+  .role-opt[disabled]{opacity:.55;cursor:default;transform:none;box-shadow:none}
+  .role-opt .em{font-size:22px;flex:none;line-height:1}
+  .role-opt .nm{display:block;font-size:15.5px;font-weight:800;letter-spacing:-.02em;line-height:1.25}
+  .role-opt .sub{display:block;font-size:11.5px;font-weight:700;color:var(--ink-mute);margin-top:1px}
+  .pass-wrap{margin-top:13px;padding:14px;border-radius:18px;background:#FFF6E2;border:1.5px solid #F4E2B8}
+  .pass-wrap[hidden]{display:none}
+  .pass-title{display:block;font-size:14.5px;font-weight:800;color:#8A6A3F;margin-bottom:9px}
+  .pass-input{
+    width:100%;min-height:58px;border-radius:14px;border:1.5px solid #EBD9B4;background:#fff;
+    font-family:inherit;font-size:27px;font-weight:800;letter-spacing:.4em;text-align:center;
+    color:var(--ink);font-variant-numeric:tabular-nums;padding-left:.4em;
+  }
+  .pass-input::placeholder{color:#D8C6A6;letter-spacing:.4em}
+  .pass-input:focus{outline:none;border-color:var(--peach);box-shadow:0 0 0 4px rgba(255,181,155,.25)}
+  .pass-err{margin:9px 2px 0;font-size:14px;font-weight:800;color:var(--red);line-height:1.45}
+  .pass-err[hidden]{display:none}
+  .pass-actions{display:flex;gap:8px;margin-top:11px}
+  .pass-back{
+    flex:1;min-height:50px;border-radius:13px;border:1.5px solid #EBD9B4;background:#fff;
+    color:#8A6A3F;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer;
+  }
+  .pass-ok{
+    flex:1;min-height:50px;border:none;border-radius:13px;
+    background:linear-gradient(135deg,#FF8A6E 0%,#F0705A 100%);color:#fff;
+    font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;
+    box-shadow:0 6px 14px rgba(240,112,90,.26);
+  }
+  .pass-ok[disabled]{opacity:.6;cursor:default;box-shadow:none}
+
+  /* 시트: 로그인한 내 역할을 먼저 */
+  .pick.me{border-color:var(--peach);background:linear-gradient(180deg,#FFFFFF 0%,#FFF5ED 100%);
+    box-shadow:0 4px 14px rgba(240,112,90,.14)}
+  .pick.me .go{color:var(--coral)}
+  .pick-egap{display:flex;align-items:center;gap:9px;margin:4px 2px 0;
+    font-size:12.5px;font-weight:800;color:var(--ink-mute)}
+  .pick-egap::before,.pick-egap::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* 메모 작성자 배지 */
+  .who{
+    display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:800;
+    padding:1px 7px;border-radius:999px;margin-right:6px;vertical-align:1px;white-space:nowrap;
+  }
+  .who.yujin{background:var(--m-yujin-bg);color:#A83263;border:1px solid var(--m-yujin-line)}
+  .who.minyong{background:var(--m-minyong-bg);color:#20489A;border:1px solid var(--m-minyong-line)}
+  .who.grandma{background:var(--m-grandma-bg);color:#9C3A22;border:1px solid var(--m-grandma-line)}
+  .who.grandpa{background:var(--m-grandpa-bg);color:#166A54;border:1px solid var(--m-grandpa-line)}
+  .who.aunt{background:var(--m-aunt-bg);color:#553A9B;border:1px solid var(--m-aunt-line)}
+  .who.uncle{background:var(--m-uncle-bg);color:#8A5B04;border:1px solid var(--m-uncle-line)}
+
   @media (prefers-reduced-motion:reduce){
     *{animation:none !important;transition:none !important}
   }
@@ -617,6 +724,17 @@
       <button class="refresh-btn" type="button" id="refreshBtn">🔄 새로고침</button>
     </div>
     <p class="sync-note" id="syncNote" hidden></p>
+
+    <div class="authbar" id="authOut">
+      <button class="kakao-btn" type="button" id="kakaoBtn">💬 카카오로 로그인</button>
+      <p class="auth-hint">로그인하면 가족 역할로 표시되고, 엄마·아빠만 민용 상세 일정까지 볼 수 있어요.</p>
+    </div>
+    <div class="authbar" id="authIn" hidden>
+      <span class="rolepill" id="rolePill"><span class="st" aria-hidden="true"></span><span class="em" id="roleEmoji">👤</span><span id="roleText">로그인 중</span></span>
+      <button class="auth-mini" type="button" id="roleChangeBtn">역할 변경</button>
+      <button class="auth-mini" type="button" id="logoutBtn">로그아웃</button>
+    </div>
+    <p class="auth-note" id="authNote" hidden></p>
   </header>
 
   <div class="alert" id="alert" role="status" aria-live="polite">
@@ -704,8 +822,27 @@
   <button class="sheet-cancel" type="button" id="sheetCancel">닫기</button>
 </div>
 
+<div class="modal-bg" id="roleBg"></div>
+<div class="modal" id="roleModal" role="dialog" aria-modal="true" aria-labelledby="roleTitle" aria-hidden="true">
+  <h3 id="roleTitle">어떤 가족분이신가요?</h3>
+  <p class="modal-sub" id="roleSub">한 번만 골라 주시면 다음부터는 이 카카오 계정으로 바로 열려요.</p>
+  <div class="role-list" id="roleList"></div>
+  <div class="pass-wrap" id="passWrap" hidden>
+    <label class="pass-title" id="passTitle" for="passInput">엄마·아빠 확인 코드 4자리</label>
+    <input class="pass-input" id="passInput" type="tel" inputmode="numeric" maxlength="4"
+      pattern="[0-9]*" autocomplete="off" placeholder="••••" aria-describedby="passErr">
+    <p class="pass-err" id="passErr" hidden></p>
+    <div class="pass-actions">
+      <button class="pass-back" type="button" id="passBack">다른 역할</button>
+      <button class="pass-ok" type="button" id="passOk">확인</button>
+    </div>
+  </div>
+  <button class="sheet-cancel" type="button" id="roleCancel">닫기</button>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function () {
   "use strict";
@@ -742,25 +879,19 @@
   function mdw(s) { return md(s) + "(" + WD[parseDate(s).getDay()] + ")"; }
   function longDate(s) { var d = parseDate(s); return (d.getMonth() + 1) + "월 " + d.getDate() + "일"; }
 
-  /* ── 등록된 일정 (11/25 ~ 12/4) ── */
+  /* ── 등록된 일정 (11/25 ~ 12/4)
+       가족 모두에게 보이는 건 '누가 언제 채은이를 보는지'뿐이에요.
+       민용 님 상세 일정은 이 파일이 아니라 서버(chaeun_care_schedules)에서
+       엄마·아빠 계정일 때만 불러와 그립니다. ── */
   var BASE = {
-    "2026-11-25": { rel: "민용 강의", dropoff: "yujin", pickup: "yujin",
+    "2026-11-25": { rel: "", dropoff: "yujin", pickup: "yujin",
       evening: { kind: "free", who: "yujin" },
-      lectures: [
-        { start: "10:00", end: "13:00", label: "내일코칭" },
-        { start: "14:00", end: "17:00", label: "내일코칭문풀" }
-      ],
-      why: "민용 강의가 17:00까지라 등원·하원 모두 유진이 맡아요.",
       memoExample: "복직 전 마지막 주 — 낮잠이불 미리 챙기기" },
-    "2026-11-26": { rel: "저녁 강의", dropoff: "minyong", pickup: "minyong",
+    "2026-11-26": { rel: "", dropoff: "minyong", pickup: "minyong",
       evening: { kind: "free", who: "yujin" },
-      lectures: [ { start: "19:00", end: "22:00", label: "내일코칭", note: "17:30 출발" } ],
-      why: "저녁 강의가 있는 날 — 등·하원은 민용이, 저녁은 유진이 봐요.",
-      memoExample: "민용 저녁 강의 — 유진이 저녁 챙기기" },
-    "2026-11-27": { rel: "민용 강의", dropoff: "yujin", pickup: "minyong",
+      memoExample: "저녁은 유진이 챙기기 · 여분 옷 가방에 넣기" },
+    "2026-11-27": { rel: "", dropoff: "yujin", pickup: "minyong",
       evening: { kind: "free", who: "yujin" },
-      lectures: [ { start: "10:00", end: "13:00", label: "내일코칭" } ],
-      why: "민용 강의가 13:00에 끝나 하원은 민용이 맡아요.",
       memoExample: "주말 앞 금요일 — 여분 옷 가방에 넣기" },
     "2026-11-30": { rel: "복직 첫날", dropoff: "minyong", pickup: "minyong",
       evening: { kind: "need", start: "17:30", endLabel: "유진 퇴근 전까지" },
@@ -862,7 +993,9 @@
     if (!text) return null;
     var id = m.id ? String(m.id) : "local-" + String(m.at || Date.now()) + "-" + i;
     var created = m.created_at || (m.at ? new Date(m.at).toISOString() : new Date().toISOString());
-    return { id: id, text: text, created_at: created };
+    /* author_role 은 나중에 추가된 칸이라, 예전 메모는 비어 있을 수 있어요 */
+    var who = typeof m.author_role === "string" && ROLE_BY_ID[m.author_role] ? m.author_role : null;
+    return { id: id, text: text, created_at: created, author_role: who };
   }
 
   function load() {
@@ -921,7 +1054,9 @@
     url: "https://sudejksvupohajeupyct.supabase.co",
     key: "sb_publishable_dDXoPspK-jtINs4TBHKHLQ_i0oRoNhH",
     assign: "chaeun_care_assignments",
-    memos: "chaeun_care_memos"
+    memos: "chaeun_care_memos",
+    profiles: "chaeun_care_profiles",
+    schedules: "chaeun_care_schedules"
   };
   var net = {
     mode: "init",   // init | syncing | live | offline
@@ -1010,9 +1145,22 @@
       });
     }
     if (op.k === "memoAdd") {
+      var row = { id: op.id, date: op.date, text: op.text, created_at: op.created_at };
+      /* 로그인한 역할을 작성자로 남겨요. author_role 칸이 아직 없으면 빼고 다시 보냅니다. */
+      if (memoSchema.author && op.author_role) row.author_role = op.author_role;
       return api(SUPA.memos, {
         method: "POST", prefer: "return=representation",
-        body: [{ id: op.id, date: op.date, text: op.text, created_at: op.created_at }]
+        body: [row]
+      }).catch(function (err) {
+        if (row.author_role && /author_role/.test((err && err.message) || "")) {
+          memoSchema.author = false;
+          delete row.author_role;
+          return api(SUPA.memos, {
+            method: "POST", prefer: "return=representation",
+            body: [row]
+          });
+        }
+        throw err;
       });
     }
     if (op.k === "memoDel") {
@@ -1095,6 +1243,7 @@
         applyServer(rows[0], rows[1]);
         net.lastSync = Date.now();
         setLive("live");
+        if (auth.canView) loadSchedules(false);
         return "live";
       })
       .catch(function (err) {
@@ -1131,10 +1280,12 @@
   }
   function doAddMemo(date, text) {
     if (!state.memos[date]) state.memos[date] = [];
-    var memo = { id: newId(), text: text, created_at: new Date().toISOString() };
+    var memo = { id: newId(), text: text, created_at: new Date().toISOString(),
+      author_role: auth.role || null };
     state.memos[date].unshift(memo);
     save(); renderMemo();
-    queue({ k: "memoAdd", id: memo.id, date: date, text: memo.text, created_at: memo.created_at });
+    queue({ k: "memoAdd", id: memo.id, date: date, text: memo.text, created_at: memo.created_at,
+      author_role: memo.author_role });
   }
   function doDelMemo(date, id) {
     var list = state.memos[date] || [];
@@ -1290,20 +1441,10 @@
     else if (st === "pending") rel = '<span class="rel rel-quiet">등록 대기</span>';
     parts.push('<div class="day-head"><h2>' + longDate(date) + " (" + WD[parseDate(date).getDay()] + ")</h2>" + rel + "</div>");
 
-    /* 민용 님 강의 일정 — 등·하원을 누가 맡는지 이해되게 먼저 보여줘요 */
-    if (day && day.lectures && day.lectures.length) {
-      parts.push('<section class="card sched" aria-label="민용 일정">' +
-        '<div class="card-head wrap"><span class="card-title"><span class="ico">📚</span>민용 일정</span>' +
-        '<span class="time-badge">강의</span></div>' +
-        '<ul class="sched-list">' +
-          day.lectures.map(function (l) {
-            return "<li><span class=\"sched-time\">" + l.start + "–" + l.end + "</span>" +
-              '<span class="sched-name">' + l.label + "</span>" +
-              (l.note ? '<span class="sched-note">' + l.note + "</span>" : "") + "</li>";
-          }).join("") +
-        "</ul>" +
-        (day.why ? '<p class="care-note">' + day.why + "</p>" : "") +
-        "</section>");
+    /* 민용 님 상세 일정 — 엄마·아빠(확인 코드 통과)에게만, 서버에서 받아온 값만 보여요 */
+    if (auth.canView) {
+      var mineRows = sched.rows.filter(function (r) { return r && r.date === date; });
+      if (mineRows.length) parts.push(scheduleCard(mineRows));
     }
 
     if (st === "weekend") {
@@ -1382,6 +1523,23 @@
     $("dayPanel").innerHTML = parts.join("");
   }
 
+  /* 민용 상세 일정 카드 (서버에서 받은 행으로만 그림) */
+  function scheduleCard(rows) {
+    var items = rows.map(function (r) {
+      var t = r.time_range ? String(r.time_range) : "";
+      return "<li>" +
+        (t ? '<span class="sched-time">' + escapeHtml(t) + "</span>" : "") +
+        '<span class="sched-name">' + escapeHtml(r.title || "") + "</span>" +
+        (r.note ? '<span class="sched-note">' + escapeHtml(r.note) + "</span>" : "") +
+        "</li>";
+    }).join("");
+    return '<section class="card sched" aria-label="민용 상세 일정">' +
+      '<div class="card-head wrap"><span class="card-title"><span class="ico">📚</span>민용 상세 일정</span>' +
+      '<span class="time-badge">엄마·아빠만</span></div>' +
+      '<ul class="sched-list">' + items + "</ul>" +
+      "</section>";
+  }
+
   /* ── 식단 ── */
   function renderMeal() {
     var date = state.current;
@@ -1433,8 +1591,12 @@
     }
     $("memoEmpty").hidden = true;
     $("memoList").innerHTML = list.map(function (m) {
+      var who = m.author_role && ROLE_BY_ID[m.author_role] ? ROLE_BY_ID[m.author_role] : null;
+      var badge = who
+        ? '<span class="who ' + m.author_role + '">' + who.emoji + " " + who.label + "</span>"
+        : "";
       return '<li class="memo-item">' +
-        '<span class="txt">' + escapeHtml(m.text) + "</span>" +
+        '<span class="txt">' + badge + escapeHtml(m.text) + "</span>" +
         '<span class="at">' + escapeHtml(fmtStamp(m.created_at)) + "</span>" +
         '<button class="del" type="button" data-del="' + escapeHtml(m.id) + '" aria-label="메모 삭제">×</button></li>';
     }).join("");
@@ -1462,7 +1624,19 @@
   function renderPickList(date) {
     var info = BASE[date];
     $("sheetSub").textContent = mdw(date) + " " + (info ? timeRange(info.evening) : "돌봄 시간 확인 전");
-    $("pickList").innerHTML = PICK_ORDER.map(function (id) {
+    var html = "";
+    /* 로그인한 역할이 있으면 맨 위에 '내 이름으로' 한 번에 누를 수 있게 해요 */
+    if (auth.role && ROLE_BY_ID[auth.role]) {
+      var myRole = ROLE_BY_ID[auth.role];
+      var already = state.assign[date] === auth.role;
+      html += '<button class="pick me" type="button" data-m="' + auth.role + '" data-date="' + date + '">' +
+        '<span class="face" aria-hidden="true">' + myRole.emoji + "</span>" +
+        '<span><span class="nm">내가 (' + myRole.label + ') 맡을게요</span>' +
+        '<span class="role">' + (already ? "지금 내가 맡은 날이에요" : "로그인한 내 이름으로 찜해요") + "</span></span>" +
+        '<span class="go">' + (already ? "맡은 중" : "찜하기") + "</span></button>" +
+        '<p class="pick-egap">다른 가족으로</p>';
+    }
+    html += PICK_ORDER.map(function (id) {
       var m = MEMBERS[id];
       var pick = state.assign[date] === id ? "지금 맡은 중" : "맡을게요";
       var roleLine = m.role && m.role !== m.name ? '<br><span class="role">' + m.role + "</span>" : "";
@@ -1471,6 +1645,7 @@
         '<span><span class="nm">' + m.name + "</span>" + roleLine + "</span>" +
         '<span class="go">' + pick + "</span></button>";
     }).join("");
+    $("pickList").innerHTML = html;
   }
   function openSheet(date) {
     lastFocus = document.activeElement;
@@ -1626,15 +1801,429 @@
   $("refreshBtn").addEventListener("click", function () {
     if (net.busy) { net.again = true; toast("곧 가족 화면으로 맞춰질 거예요"); return; }
     syncNow({ force: true, showBusy: true }).then(function (r) {
+      if (auth.canView) loadSchedules(true);
       if (r === "live") toast("가족 화면을 새로 맞췄어요");
       else if (r === "offline") toast("아직 연결되지 않았어요 · 이 기기에 저장 중이에요");
     });
   });
 
+  /* ───────────────────────────────────────────────
+     카카오 로그인 · 가족 역할 (Supabase Auth)
+       · 로그인      supabase.auth.signInWithOAuth({ provider:'kakao' })
+       · 역할        chaeun_care_profiles — 내 행만 읽고 써요
+       · 엄마·아빠   확인 코드가 맞아야 rpc('verify_parent_role')가
+                     can_view_minyong = true 로 올려줘요 (민용 상세 일정)
+       · 손님       로그인 안 해도 등하원·식단·메모는 그대로 보여요
+     ─────────────────────────────────────────────── */
+  var ROLE_OPTIONS = [
+    { id: "yujin",   label: "엄마",       sub: "유진",     emoji: "👩", parent: true },
+    { id: "minyong", label: "아빠",       sub: "민용",     emoji: "👨", parent: true },
+    { id: "grandma", label: "외할머니",   sub: "할머니",   emoji: "👵", parent: false },
+    { id: "grandpa", label: "외할아버지", sub: "할아버지", emoji: "👴", parent: false },
+    { id: "aunt",    label: "이모",       sub: "",         emoji: "👩", parent: false },
+    { id: "uncle",   label: "이모부",     sub: "",         emoji: "👨", parent: false }
+  ];
+  var ROLE_BY_ID = {};
+  ROLE_OPTIONS.forEach(function (r) { ROLE_BY_ID[r.id] = r; });
+  var ROLE_KEY = "chaeun-care-role-v1";
+
+  var SB = null;
+  try {
+    if (window.supabase && window.supabase.createClient) {
+      SB = window.supabase.createClient(SUPA.url, SUPA.key, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+          flowType: "implicit"
+        }
+      });
+    }
+  } catch (e) { SB = null; }
+
+  var auth = {
+    user: null,
+    role: null,       // 이 카카오 계정의 역할 (서버가 알려준 값)
+    canView: false,   // 엄마·아빠 확인을 통과했을 때만 true
+    name: "",
+    pendingRole: null,
+    verifying: false,
+    loadingFor: null
+  };
+  var sched = { loaded: false, rows: [], at: 0 };   // 민용 상세 일정 (서버 값)
+  var memoSchema = { author: true };                // author_role 칸이 있는지
+  var roleModalOpen = false;
+
+  function kakaoName(u) {
+    var m = (u && u.user_metadata) || {};
+    return String(m.name || m.full_name || m.nickname || m.user_name || "").trim();
+  }
+
+  function readLocalRole(uid) {
+    try {
+      var all = JSON.parse(localStorage.getItem(ROLE_KEY) || "{}");
+      return all && ROLE_BY_ID[all[uid]] ? all[uid] : null;
+    } catch (e) { return null; }
+  }
+  function writeLocalRole(uid, role) {
+    if (!uid || !ROLE_BY_ID[role]) return;
+    try {
+      var all = JSON.parse(localStorage.getItem(ROLE_KEY) || "{}");
+      if (!all || typeof all !== "object") all = {};
+      all[uid] = role;
+      localStorage.setItem(ROLE_KEY, JSON.stringify(all));
+    } catch (e) {}
+  }
+
+  function authNote(msg) {
+    var el = $("authNote");
+    if (!el) return;
+    if (!msg) { el.hidden = true; el.textContent = ""; return; }
+    el.hidden = false;
+    el.textContent = msg;
+  }
+
+  function authUI() {
+    var out = $("authOut"), inn = $("authIn"), pill = $("rolePill");
+    if (!out || !inn) return;
+    var on = !!auth.user;
+    out.hidden = on;
+    inn.hidden = !on;
+    if (!on) return;
+    var r = ROLE_BY_ID[auth.role];
+    pill.classList.toggle("none", !r);
+    $("roleEmoji").textContent = r ? r.emoji : "👤";
+    $("roleText").textContent = r
+      ? r.label + " 로그인 중" + (auth.canView ? " · 민용 일정 보기" : "")
+      : "역할을 골라주세요";
+    pill.title = (auth.name ? auth.name + " · " : "") + "카카오 로그인";
+    $("roleChangeBtn").textContent = r ? "역할 변경" : "역할 선택";
+  }
+
+  /* ── 로그인 / 로그아웃 ── */
+  function signInKakao() {
+    if (!SB) { toast("로그인 기능을 불러오지 못했어요 · 새로고침 후 다시 시도해 주세요"); return; }
+    var back = location.origin + location.pathname;
+    SB.auth.signInWithOAuth({ provider: "kakao", options: { redirectTo: back } })
+      .then(function (res) {
+        if (res && res.error) toast("카카오 로그인을 시작하지 못했어요 · " + (res.error.message || ""));
+      })
+      .catch(function (err) { toast("카카오 로그인을 시작하지 못했어요 · " + (err.message || "")); });
+  }
+
+  function signOutNow() {
+    if (!SB) return;
+    SB.auth.signOut().then(function () {
+      onSession(null);
+      toast("로그아웃했어요 · 등하원·식단은 그대로 보여요");
+    }).catch(function () {
+      toast("로그아웃하지 못했어요 · 잠시 뒤 다시 시도해 주세요");
+    });
+  }
+
+  function onSession(sessionObj) {
+    var u = sessionObj && sessionObj.user ? sessionObj.user : null;
+    if (!u) {
+      auth.user = null; auth.role = null; auth.canView = false;
+      auth.name = ""; auth.loadingFor = null;
+      sched.rows = []; sched.loaded = false;
+      closeRoleModal();
+      authUI(); renderAll();
+      return;
+    }
+    if (auth.loadingFor === u.id) return;
+    auth.loadingFor = u.id;
+    auth.user = u;
+    auth.name = kakaoName(u);
+    /* 다른 사람이 이 기기에서 로그인했으면 앞사람의 민용 일정은 먼저 지워요 */
+    auth.canView = false;
+    sched.rows = []; sched.loaded = false;
+    authNote("");
+    authUI(); renderAll();
+    /* 카카오에서 돌아올 때 주소에 붙는 토큰 조각은 지워둘게요 */
+    if (location.hash && location.hash.indexOf("access_token") >= 0) {
+      try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+    }
+    loadProfile();
+  }
+
+  /* ── 프로필(역할) 읽기 ── */
+  function loadProfile() {
+    if (!SB || !auth.user) return Promise.resolve(null);
+    var uid = auth.user.id;
+    return SB.from(SUPA.profiles)
+      .select("role_id,kakao_name,can_view_minyong")
+      .eq("user_id", uid)
+      .limit(1)
+      .then(function (res) {
+        if (res.error) throw res.error;
+        var row = (res.data && res.data[0]) || null;
+        if (!row) {
+          /* 확인 코드를 이미 통과했다면(RPC 성공) 역할을 다시 묻지 않아요 */
+          if (auth.canView) { authUI(); return null; }
+          /* 아직 역할을 안 고른 계정 — 한 번만 물어봐요 */
+          auth.role = readLocalRole(uid);
+          auth.canView = false;
+          authUI();
+          openRoleModal();
+          return null;
+        }
+        auth.role = ROLE_BY_ID[row.role_id] ? row.role_id : null;
+        auth.canView = row.can_view_minyong === true;
+        if (row.kakao_name) auth.name = row.kakao_name;
+        if (auth.role) writeLocalRole(uid, auth.role);
+        closeRoleModal();
+        return row;
+      })
+      .catch(function (err) {
+        /* 표가 아직 없거나 권한이 막혀도 로그인은 유지해요 (민용 일정은 안 열림) */
+        auth.role = readLocalRole(uid);
+        authUI();
+        authNote("역할 정보를 서버에서 읽지 못했어요. (" + ((err && err.message) || "권한") + ")");
+        return null;
+      })
+      .then(function (row) {
+        authUI();
+        if (auth.canView) return loadSchedules(true);
+        sched.rows = []; sched.loaded = false;
+        renderAll();
+        return null;
+      });
+  }
+
+  /* ── 역할 저장 (외할머니·외할아버지·이모·이모부) ── */
+  function saveRole(roleId) {
+    var uid = auth.user && auth.user.id;
+    var r = ROLE_BY_ID[roleId];
+    if (!uid || !r) return;
+    setRoleBusy(true);
+
+    function done(ok, err) {
+      setRoleBusy(false);
+      auth.role = roleId;
+      auth.canView = false;
+      writeLocalRole(uid, roleId);
+      sched.rows = []; sched.loaded = false;
+      closeRoleModal();
+      authUI(); renderAll();
+      if (ok) {
+        toast(r.emoji + " " + r.label + "로 저장했어요 · 이제 찜·메모에 내 이름이 붙어요");
+      } else {
+        authNote("역할을 서버에 저장하지 못해 이 기기에서만 기억할게요. (" + ((err && err.message) || "권한") + ")");
+        toast(r.emoji + " " + r.label + "로 골랐어요 · 이 기기에만 저장됐어요");
+      }
+    }
+
+    if (!SB) { done(false, null); return; }
+    SB.from(SUPA.profiles).upsert({
+      user_id: uid,
+      role_id: roleId,
+      kakao_name: auth.name || "",
+      can_view_minyong: false,
+      updated_at: new Date().toISOString()
+    }, { onConflict: "user_id" }).then(function (res) {
+      if (res.error) throw res.error;
+      done(true, null);
+    }).catch(function (err) { done(false, err); });
+  }
+
+  /* ── 엄마·아빠 확인 코드 ── */
+  function verifyParent(roleId, code) {
+    if (!SB) return Promise.reject(new Error("로그인 기능을 불러오지 못했어요"));
+    return SB.rpc("verify_parent_role", { selected_role: roleId, passcode: code })
+      .then(function (res) {
+        if (res.error) throw res.error;
+        return res.data === true;
+      });
+  }
+
+  function submitPass() {
+    if (auth.verifying) return;
+    var roleId = auth.pendingRole;
+    var r = ROLE_BY_ID[roleId];
+    if (!r || !r.parent) return;
+    var code = String($("passInput").value || "").replace(/\D/g, "");
+    if (code.length !== 4) { passError("4자리 코드를 입력해 주세요."); return; }
+    auth.verifying = true;
+    setPassBusy(true);
+    verifyParent(roleId, code).then(function (ok) {
+      auth.verifying = false;
+      setPassBusy(false);
+      if (!ok) { passError("확인 코드가 맞지 않아요. 다시 확인해 주세요."); return; }
+      auth.role = roleId;
+      auth.canView = true;
+      if (auth.user) writeLocalRole(auth.user.id, roleId);
+      closeRoleModal();
+      authNote("");
+      authUI();
+      toast("확인됐어요 · 민용 상세 일정이 보여요");
+      loadSchedules(true).then(function () { renderAll(); });
+      loadProfile();   /* 서버에 저장된 값으로 한 번 더 맞춰요 */
+    }).catch(function (err) {
+      auth.verifying = false;
+      setPassBusy(false);
+      passError("확인하지 못했어요. (" + ((err && err.message) || "연결 오류") + ")");
+    });
+  }
+
+  /* ── 역할 모달 ── */
+  function renderRoleList() {
+    $("roleList").innerHTML = ROLE_OPTIONS.map(function (r) {
+      return '<button class="role-opt" type="button" data-role="' + r.id + '">' +
+        '<span class="em" aria-hidden="true">' + r.emoji + "</span>" +
+        '<span><span class="nm">' + r.label + (r.sub ? " (" + r.sub + ")" : "") + "</span>" +
+        (r.parent ? '<span class="sub">확인 코드 필요</span>' : "") +
+        "</span></button>";
+    }).join("");
+  }
+
+  function openRoleModal() {
+    if (!auth.user) { toast("먼저 카카오로 로그인해 주세요"); return; }
+    roleModalOpen = true;
+    auth.pendingRole = null;
+    if (!document.getElementById("roleList").children.length) renderRoleList();
+    $("roleList").hidden = false;
+    $("passWrap").hidden = true;
+    $("passErr").hidden = true;
+    $("passInput").value = "";
+    $("roleModal").classList.add("open");
+    $("roleModal").setAttribute("aria-hidden", "false");
+    $("roleBg").classList.add("open");
+    var first = $("roleList").querySelector("button");
+    if (first) first.focus({ preventScroll: true });
+  }
+  function closeRoleModal() {
+    roleModalOpen = false;
+    $("roleModal").classList.remove("open");
+    $("roleModal").setAttribute("aria-hidden", "true");
+    $("roleBg").classList.remove("open");
+  }
+  function chooseRole(roleId) {
+    var r = ROLE_BY_ID[roleId];
+    if (!r) return;
+    if (!r.parent) { saveRole(roleId); return; }
+    auth.pendingRole = roleId;
+    $("roleList").hidden = true;
+    $("passTitle").textContent = r.label + " (" + r.sub + ") 확인 코드 4자리";
+    $("passWrap").hidden = false;
+    $("passErr").hidden = true;
+    $("passInput").value = "";
+    $("passInput").focus({ preventScroll: true });
+  }
+  function backToList() {
+    auth.pendingRole = null;
+    $("passWrap").hidden = true;
+    $("roleList").hidden = false;
+    $("passErr").hidden = true;
+    var first = $("roleList").querySelector("button");
+    if (first) first.focus({ preventScroll: true });
+  }
+  function passError(msg) {
+    var el = $("passErr");
+    el.hidden = false;
+    el.textContent = msg;
+    $("passInput").value = "";
+    $("passInput").focus({ preventScroll: true });
+  }
+  function setRoleBusy(b) {
+    var opts = $("roleList").querySelectorAll("button");
+    for (var i = 0; i < opts.length; i++) opts[i].disabled = !!b;
+  }
+  function setPassBusy(b) {
+    $("passOk").disabled = !!b;
+    $("passOk").textContent = b ? "확인 중…" : "확인";
+  }
+
+  /* ── 민용 상세 일정 (RLS 가 엄마·아빠에게만 행을 내려줘요) ── */
+  function loadSchedules(force) {
+    if (!SB || !auth.canView) return Promise.resolve(false);
+    var now = Date.now();
+    if (!force && sched.loaded && now - sched.at < 60000) return Promise.resolve(false);
+    return SB.from(SUPA.schedules)
+      .select("*")
+      .order("date", { ascending: true })
+      .order("sort_order", { ascending: true })
+      .then(function (res) {
+        sched.loaded = true;
+        sched.at = Date.now();
+        if (res.error) {
+          sched.rows = [];
+          authNote("민용 상세 일정을 불러오지 못했어요. (" + (res.error.message || "권한") + ")");
+        } else {
+          sched.rows = res.data || [];
+        }
+        renderPanel();
+        return true;
+      })
+      .catch(function () {
+        sched.loaded = true;
+        sched.rows = [];
+        renderPanel();
+        return false;
+      });
+  }
+
+  /* author_role 칸이 있는지만 살짝 확인해요 (없으면 메모는 예전처럼 저장) */
+  function probeMemoSchema() {
+    return api(SUPA.memos + "?select=author_role&limit=1").then(function () {
+      memoSchema.author = true;
+    }).catch(function (err) {
+      if (/author_role/.test((err && err.message) || "")) memoSchema.author = false;
+    });
+  }
+
+  function initAuth() {
+    authUI();
+    $("kakaoBtn").addEventListener("click", signInKakao);
+    $("logoutBtn").addEventListener("click", signOutNow);
+    $("roleChangeBtn").addEventListener("click", function () { openRoleModal(); });
+    $("roleCancel").addEventListener("click", closeRoleModal);
+    $("roleBg").addEventListener("click", closeRoleModal);
+    $("roleList").addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-role]");
+      if (!btn) return;
+      chooseRole(btn.getAttribute("data-role"));
+    });
+    $("passBack").addEventListener("click", backToList);
+    $("passOk").addEventListener("click", submitPass);
+    $("passInput").addEventListener("input", function () {
+      var el = $("passInput");
+      var v = String(el.value || "").replace(/\D/g, "").slice(0, 4);
+      if (el.value !== v) el.value = v;
+      if (v.length === 4) submitPass();
+    });
+    $("passInput").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); submitPass(); }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && roleModalOpen) closeRoleModal();
+    });
+
+    if (!SB) {
+      authNote("로그인 기능을 불러오지 못했어요. 네트워크를 확인한 뒤 새로고침해 주세요.");
+      return;
+    }
+    try {
+      SB.auth.onAuthStateChange(function (evt, s) {
+        if (evt === "SIGNED_OUT") { onSession(null); return; }
+        onSession(s);
+      });
+      SB.auth.getSession().then(function (res) {
+        var s = res && res.data ? res.data.session : null;
+        if (!s && auth.user) return;   /* 이미 로그인 상태면 건드리지 않아요 */
+        onSession(s);
+      }).catch(function () { if (!auth.user) onSession(null); });
+    } catch (e) {
+      authNote("로그인 기능을 준비하지 못했어요. 새로고침해 주세요.");
+    }
+  }
+
   /* ── 시작: 캐시로 먼저 그리고, 서버 값으로 맞춘 뒤 15초마다 동기화 ── */
   load();
   renderAll();
   setLive("init");
+  probeMemoSchema();
+  initAuth();
   syncNow({ force: true });
 
   net.timer = setInterval(function () {
