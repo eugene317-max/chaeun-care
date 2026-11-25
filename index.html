@@ -394,6 +394,27 @@
   .memo-save:focus-visible{outline:3px solid #F7B9A6;outline-offset:2px}
   .memo-hint{margin:9px 2px 0;font-size:14.5px;font-weight:600;color:var(--ink-mute)}
 
+  /* 메모 작성자 고르기 */
+  .memo-who{display:flex;align-items:center;gap:6px 9px;flex-wrap:wrap;margin:0 0 11px;padding:0 1px}
+  .memo-who-label{flex:none;font-size:13.5px;font-weight:800;color:var(--ink-mute);letter-spacing:-.02em;white-space:nowrap}
+  .memo-who.need .memo-who-label{color:var(--coral)}
+  .memo-who-chips{display:flex;flex-wrap:wrap;gap:5px;min-width:0}
+  .who-chip{
+    display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:5px 10px;border-radius:999px;
+    border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);
+    font-family:inherit;font-size:13px;font-weight:800;letter-spacing:-.02em;line-height:1;
+    cursor:pointer;white-space:nowrap;transition:transform .1s ease, box-shadow .15s ease;
+  }
+  .who-chip:active{transform:scale(.96)}
+  .who-chip:focus-visible{outline:3px solid #F7B9A6;outline-offset:2px}
+  .who-chip[aria-pressed="true"]{box-shadow:var(--shadow-sm)}
+  .who-chip.yujin[aria-pressed="true"]{background:var(--m-yujin-bg);color:#A83263;border-color:var(--m-yujin-line)}
+  .who-chip.minyong[aria-pressed="true"]{background:var(--m-minyong-bg);color:#20489A;border-color:var(--m-minyong-line)}
+  .who-chip.grandma[aria-pressed="true"]{background:var(--m-grandma-bg);color:#9C3A22;border-color:var(--m-grandma-line)}
+  .who-chip.grandpa[aria-pressed="true"]{background:var(--m-grandpa-bg);color:#166A54;border-color:var(--m-grandpa-line)}
+  .who-chip.aunt[aria-pressed="true"]{background:var(--m-aunt-bg);color:#553A9B;border-color:var(--m-aunt-line)}
+  .who-chip.uncle[aria-pressed="true"]{background:var(--m-uncle-bg);color:#8A5B04;border-color:var(--m-uncle-line)}
+
   .memo-list{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
   .memo-item{
     display:flex;gap:10px;align-items:flex-start;
@@ -800,6 +821,10 @@
     <div class="memo-example" id="memoExample">
       <span class="ico">🧸</span>
       <p><span class="lab">예시</span><span id="memoExampleText">11/30 유진 복직 첫날! 낮잠이불 챙기기</span></p>
+    </div>
+    <div class="memo-who" id="memoWho">
+      <span class="memo-who-label" id="memoWhoLabel">누가 남겼나요?</span>
+      <div class="memo-who-chips" id="memoWhoChips" role="group" aria-label="메모 작성자 고르기"></div>
     </div>
     <form class="memo-form" id="memoForm" autocomplete="off">
       <textarea class="memo-input" id="memoInput" rows="1" maxlength="80"
@@ -1369,7 +1394,7 @@
   function doAddMemo(date, text) {
     if (!state.memos[date]) state.memos[date] = [];
     var memo = { id: newId(), text: text, created_at: new Date().toISOString(),
-      author_role: auth.role || null };
+      author_role: author.sel || auth.role || null };
     state.memos[date].unshift(memo);
     save(); renderMemo();
     queue({ k: "memoAdd", id: memo.id, date: date, text: memo.text, created_at: memo.created_at,
@@ -1723,14 +1748,75 @@
     $("memoEmpty").hidden = true;
     $("memoList").innerHTML = list.map(function (m) {
       var who = m.author_role && ROLE_BY_ID[m.author_role] ? ROLE_BY_ID[m.author_role] : null;
+      var mem = who && MEMBERS[m.author_role] ? MEMBERS[m.author_role] : null;
       var badge = who
-        ? '<span class="who ' + m.author_role + '">' + who.emoji + " " + who.label + "</span>"
+        ? '<span class="who ' + m.author_role + '">' +
+            (mem ? mem.emoji + " " + mem.name : who.emoji + " " + who.label) + "</span>"
         : "";
       return '<li class="memo-item">' +
         '<span class="txt">' + badge + escapeHtml(m.text) + "</span>" +
         '<span class="at">' + escapeHtml(fmtStamp(m.created_at)) + "</span>" +
         '<button class="del" type="button" data-del="' + escapeHtml(m.id) + '" aria-label="메모 삭제">×</button></li>';
     }).join("");
+  }
+
+  /* ── 메모 작성자(누가 남겼는지) ──
+     로그인한 역할이 있으면 그 이름을 쓰고, 로그인 전이면 이 기기에서 한 번 고른 이름을 기억해요.
+     저장은 chaeun_care_memos.author_role 에 그대로 들어가고, 예전 메모는 비어 있어도 괜찮아요. */
+  var AUTHOR_KEY = "chaeun-care-author-v1";
+  var WHO_ORDER = ["yujin", "minyong", "grandma", "grandpa", "aunt", "uncle"];
+  var author = { sel: null, auto: true };
+
+  function readLocalAuthor() {
+    try {
+      var v = localStorage.getItem(AUTHOR_KEY);
+      return v && ROLE_BY_ID[v] ? v : null;
+    } catch (e) { return null; }
+  }
+  function writeLocalAuthor(id) {
+    try {
+      if (id) localStorage.setItem(AUTHOR_KEY, id);
+      else localStorage.removeItem(AUTHOR_KEY);
+    } catch (e) {}
+  }
+  function renderWriter() {
+    var box = $("memoWhoChips"), label = $("memoWhoLabel");
+    if (!box) return;
+    box.innerHTML = WHO_ORDER.map(function (id) {
+      var m = MEMBERS[id];
+      if (!m) return "";
+      return '<button class="who-chip ' + id + '" type="button" data-who="' + id + '" ' +
+        'aria-pressed="' + (author.sel === id) + '">' + m.emoji + " " + m.name + "</button>";
+    }).join("");
+    if (label) label.textContent = author.sel ? "내 이름" : "누가 남겼나요?";
+  }
+  function setAuthor(id) {
+    if (!id || !ROLE_BY_ID[id]) return;
+    author.sel = id;
+    author.auto = false;
+    writeLocalAuthor(id);
+    var box = $("memoWho");
+    if (box) box.classList.remove("need");
+    renderWriter();
+  }
+  function needAuthor() {
+    var box = $("memoWho");
+    if (box) {
+      box.classList.add("need");
+      setTimeout(function () { box.classList.remove("need"); }, 2800);
+      try { box.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) {}
+    }
+    toast("누가 남긴 메모인지 이름을 먼저 골라 주세요");
+  }
+  /* 로그인 역할이 있으면 그 이름을 기본으로 (이 기기에서 직접 고른 이름은 그대로 둬요) */
+  function syncAuthorFromLogin() {
+    if (!auth.role || !ROLE_BY_ID[auth.role]) { renderWriter(); return; }
+    if (author.auto || !author.sel) {
+      author.sel = auth.role;
+      author.auto = true;
+      writeLocalAuthor(auth.role);
+    }
+    renderWriter();
   }
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
@@ -1745,6 +1831,7 @@
     renderPanel();
     renderMeal();
     renderMemo();
+    renderWriter();
     /* 시트를 열어둔 채 가족이 다른 사람을 정했으면 라벨도 같이 맞춰요 */
     if (sheetDate && $("sheet").classList.contains("open")) renderPickList(sheetDate);
   }
@@ -1929,6 +2016,7 @@
     var input = $("memoInput");
     var text = input.value.trim();
     if (!text) { input.focus(); return; }
+    if (!author.sel && !auth.role) { needAuthor(); return; }
     doAddMemo(state.current, text);
     input.value = "";
     toast("메모를 남겼어요 · 가족에게 바로 보여요");
@@ -1942,6 +2030,12 @@
     if (!window.confirm("이 메모를 지울까요?\n가족 모두에게서 사라져요.")) return;
     doDelMemo(state.current, id);
     toast("메모를 지웠어요");
+  });
+
+  $("memoWhoChips").addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-who]");
+    if (!btn) return;
+    setAuthor(btn.getAttribute("data-who"));
   });
 
   /* 공용 DB 를 실수로 날리지 않도록 '보고 있던 화면'만 처음으로 되돌립니다 */
@@ -2056,6 +2150,7 @@
     inn.hidden = !on;
     if (!on) return;
     var r = ROLE_BY_ID[auth.role];
+    syncAuthorFromLogin();
     pill.classList.toggle("none", !r);
     $("roleEmoji").textContent = r ? r.emoji : "👤";
     $("roleText").textContent = r
@@ -2407,6 +2502,8 @@
   }
 
   /* ── 시작: 캐시로 먼저 그리고, 서버 값으로 맞춘 뒤 15초마다 동기화 ── */
+  author.sel = readLocalAuthor();
+  author.auto = !author.sel;
   load();
   renderAll();
   setLive("init");
