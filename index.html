@@ -226,25 +226,31 @@
   /* 등·하원 2단 */
   .mini-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
   .mini{
-    background:#FFFBF6;border:1.5px solid var(--line);border-radius:18px;padding:14px 13px 15px;
-    display:flex;flex-direction:column;gap:9px;
+    background:#FFFBF6;border:1.5px solid var(--line);border-radius:18px;padding:13px 13px 14px;
+    display:flex;flex-direction:column;gap:8px;
   }
   .mini-label{font-size:15px;font-weight:800;color:var(--ink-soft);display:flex;align-items:center;gap:6px}
   .mini-label svg{flex:none;display:block}
-  /* 등원·하원 카드의 '변경' 버튼과 기본값 표시 */
+  /* 등원·하원 카드의 '변경' 미니 버튼과 기본값 표시 */
+  .mini-head{display:flex;align-items:center;gap:6px}
   .mini-note{
     align-self:flex-start;font-size:12.5px;font-weight:800;color:#8A6A3F;
     background:#FFF6E2;border:1px solid #F4E2B8;border-radius:999px;padding:2px 9px;line-height:1.45;
   }
+  /* 카드 전체 폭 버튼 대신 제목 옆에 붙는 조그만 pill — 보이는 크기는 작게,
+     누르는 자리는 ::after로 위아래를 넓혀 손가락으로도 편하게 */
   .mini-change{
-    display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:46px;
-    margin-top:auto;padding:9px 10px;border-radius:13px;
-    border:1.5px solid #C6DAFB;background:linear-gradient(180deg,#FFFFFF 0%,#EAF2FF 100%);
-    color:#2558A8;font-family:inherit;font-size:15.5px;font-weight:800;letter-spacing:-.02em;
-    cursor:pointer;transition:transform .1s ease, filter .15s ease;
+    position:relative;display:inline-flex;align-items:center;justify-content:center;gap:3px;
+    flex:none;margin-left:auto;min-height:30px;padding:5px 10px;border-radius:999px;
+    border:1.2px solid #C6DAFB;background:#F3F8FF;
+    color:#2558A8;font-family:inherit;font-size:12.5px;font-weight:800;letter-spacing:-.02em;
+    line-height:1;cursor:pointer;-webkit-tap-highlight-color:transparent;
+    transition:transform .1s ease, background .15s ease;
   }
-  .mini-change:hover{filter:brightness(1.02)}
-  .mini-change:active{transform:scale(.98)}
+  .mini-change::after{content:"";position:absolute;inset:-7px -3px;border-radius:999px}
+  .mini-change .em{font-size:11.5px;line-height:1}
+  .mini-change:hover{background:#EAF2FF}
+  .mini-change:active{transform:scale(.96)}
   .mini-change:focus-visible{outline:3px solid #F7B9A6;outline-offset:2px}
 
   /* 멤버 칩 */
@@ -693,16 +699,10 @@
   }
   .pass-ok[disabled]{opacity:.6;cursor:default;box-shadow:none}
 
-  /* 시트: 로그인한 내 역할을 먼저 */
-  .pick.me{border-color:var(--peach);background:linear-gradient(180deg,#FFFFFF 0%,#FFF5ED 100%);
-    box-shadow:0 4px 14px rgba(240,112,90,.14)}
-  .pick.me .go{color:var(--coral)}
+  /* 기본값으로 되돌리기 */
   .pick.revert{border-style:dashed;background:#FFFBF5}
   .pick.revert .face{background:#FFF3DA;font-size:20px}
   .pick.revert .nm{font-size:16.5px}
-  .pick-egap{display:flex;align-items:center;gap:9px;margin:4px 2px 0;
-    font-size:12.5px;font-weight:800;color:var(--ink-mute)}
-  .pick-egap::before,.pick-egap::after{content:"";flex:1;height:1px;background:var(--line)}
 
   /* 메모 작성자 배지 */
   .who{
@@ -1435,7 +1435,7 @@
     return slot === "care" ? true : s[slot] !== def;
   }
 
-  /* 등원/하원 미니 카드 — 누구인지 + 🔄 변경 버튼 */
+  /* 등원/하원 미니 카드 — 제목 옆에 작은 🔄 변경 버튼 */
   function miniCard(date, slot) {
     var who = whoFor(date, slot);
     var def = baseSlot(date, slot);
@@ -1447,9 +1447,12 @@
       note = '<span class="mini-note">기본 ' + MEMBERS[def].name + '</span>';
     }
     return '<div class="mini">' +
-      '<span class="mini-label">' + ico + label + "</span>" + body + note +
-      '<button class="mini-change" type="button" data-open-slot="' + slot + '" data-date="' + date + '">' +
-        '<span aria-hidden="true">🔄</span>변경</button>' +
+      '<div class="mini-head">' +
+        '<span class="mini-label">' + ico + label + "</span>" +
+        '<button class="mini-change" type="button" aria-label="' + SLOT_LABEL[slot] + ' 담당 바꾸기"' +
+          ' data-open-slot="' + slot + '" data-date="' + date + '">' +
+          '<span class="em" aria-hidden="true">🔄</span>변경</button>' +
+      "</div>" + body + note +
       "</div>";
   }
 
@@ -1774,20 +1777,8 @@
 
     var nowWho = whoFor(date, slot);
     var def = baseSlot(date, slot);
-    var html = "";
-    /* 로그인한 역할이 있으면 맨 위에 '내 이름으로' 한 번에 누를 수 있게 해요 */
-    if (auth.role && ROLE_BY_ID[auth.role]) {
-      var myRole = ROLE_BY_ID[auth.role];
-      var already = nowWho === auth.role;
-      var verb = sheetVerb(slot);
-      html += '<button class="pick me" type="button" data-m="' + auth.role + '" data-date="' + date + '">' +
-        '<span class="face" aria-hidden="true">' + myRole.emoji + "</span>" +
-        '<span><span class="nm">내가 (' + myRole.label + ') ' + verb + '</span>' +
-        '<span class="role">' + (already ? "지금 내가 맡은 자리예요" : "로그인한 내 이름으로 정해요") + "</span></span>" +
-        '<span class="go">' + (already ? "맡은 중" : "정하기") + "</span></button>" +
-        '<p class="pick-egap">다른 가족으로</p>';
-    }
-    html += PICK_ORDER.map(function (id) {
+    /* 제목 아래에 가족 6명 목록만 바로 — 로그인 역할과 상관없이 같은 목록이에요 */
+    var html = PICK_ORDER.map(function (id) {
       var m = MEMBERS[id];
       var pick = nowWho === id ? "지금 맡은 중" : sheetVerb(slot);
       var roleLine = m.role && m.role !== m.name ? '<br><span class="role">' + m.role + "</span>" : "";
