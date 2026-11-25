@@ -1796,12 +1796,14 @@
         '<span><span class="nm">' + m.name + "</span>" + roleLine + "</span>" +
         '<span class="go">' + pick + "</span></button>";
     }).join("");
-    /* 기본값에서 바꿔 둔 자리라면, 언제든 기본값으로 돌릴 수 있게 해요 */
-    if (slot !== "care" && isChanged(date, slot) && def) {
+    /* 기본값에서 바꿔 둔 자리라면, 언제든 기본값(또는 미정)으로 돌릴 수 있게 해요 */
+    if (slot !== "care" && isChanged(date, slot)) {
+      var backNm = def ? "기본값(" + MEMBERS[def].name + ")으로 되돌리기" : "미정으로 되돌리기";
+      var backRole = def ? SLOT_LABEL[slot] + "을 원래대로 둘 때" : "아무도 정하지 않은 상태로";
       html += '<button class="pick revert" type="button" data-revert="' + slot + '" data-date="' + date + '">' +
         '<span class="face" aria-hidden="true">↩️</span>' +
-        '<span><span class="nm">기본값(' + MEMBERS[def].name + ')으로 되돌리기</span>' +
-        '<span class="role">' + SLOT_LABEL[slot] + "을 원래대로 둘 때</span></span></button>";
+        '<span><span class="nm">' + backNm + '</span>' +
+        '<span class="role">' + backRole + "</span></span></button>";
     }
     $("pickList").innerHTML = html;
   }
@@ -1910,7 +1912,9 @@
       var def = baseSlot(rDate, rSlot);
       closeSheet();
       doSetSlot(rDate, rSlot, null);
-      toast(SLOT_LABEL[rSlot] + "을 기본값" + (def ? "(" + MEMBERS[def].name + ")" : "") + "으로 되돌렸어요 ✓");
+      toast(SLOT_LABEL[rSlot] + (def
+        ? "을 기본값(" + MEMBERS[def].name + ")으로 되돌렸어요 ✓"
+        : "을 미정으로 되돌렸어요 ✓"));
       return;
     }
     var btn = e.target.closest(".pick");
