@@ -317,30 +317,15 @@
     font-size:15px;font-weight:800;
   }
   .done-msg{margin:11px 0 6px;font-size:16px;font-weight:700;color:#256B58;word-break:keep-all}
-  .done-when{margin:0 0 13px;font-size:14.5px;font-weight:700;color:#5C8F7E;word-break:keep-all}
+  .done-when{margin:0 0 2px;font-size:14.5px;font-weight:700;color:#5C8F7E;word-break:keep-all}
 
-  /* 찜 완료 카드 — 가족 누구나 한눈에 누르는 큰 버튼 2개 */
-  .done-actions{display:flex;flex-direction:column;gap:9px}
-  .btn-act{
-    display:flex;align-items:center;justify-content:center;gap:9px;
-    width:100%;min-height:58px;padding:14px 16px;border-radius:17px;
-    font-family:inherit;font-size:19px;font-weight:800;letter-spacing:-.02em;
-    cursor:pointer;transition:transform .1s ease, box-shadow .15s ease, filter .15s ease;
-  }
-  .btn-act .ico{font-size:19px;line-height:1}
-  .btn-act:active{transform:scale(.985)}
-  .btn-act:focus-visible{outline:3px solid #F7B9A6;outline-offset:3px}
-  .btn-change{
-    border:none;color:#fff;
-    background:linear-gradient(135deg,#5C97F7 0%,#4C8DF6 100%);
-    box-shadow:0 8px 18px rgba(76,141,246,.28);
-  }
-  .btn-change:hover{filter:brightness(1.04)}
-  .btn-cancel{
-    background:#fff;color:var(--red);border:2px solid #F7B9B9;
-    box-shadow:var(--shadow-sm);
-  }
-  .btn-cancel:hover{background:#FFF6F6}
+  /* 찜 완료 카드 — 카드 하단 큰 버튼 대신 머리말 옆 조그만 pill 2개(등·하원과 같은 결) */
+  .care-acts{display:flex;align-items:center;gap:7px;flex:none;margin-left:auto}
+  .care-acts .mini-change::after{inset:-7px -1px}
+  /* 시간 배지는 제목·버튼 아래 한 줄로 내려앉게(오른쪽에 둥둥 뜨지 않도록) */
+  .care-done .card-head .time-badge{margin-left:0}
+  .mini-change.mini-cancel{border-color:#F7B9B9;background:#FFF7F7;color:#C0392B}
+  .mini-change.mini-cancel:hover{background:#FFEFEF}
 
   .care-free{border:1.5px solid var(--line);background:#FFFDF9}
   .care-free .free-msg{margin:0;font-size:16px;font-weight:600;color:var(--ink-mute)}
@@ -1638,17 +1623,23 @@
             "</section>");
         } else {
           var when = state.assignMeta[date] ? fmtStamp(state.assignMeta[date]) + "에 정했어요" : "가족 누구든 바꿀 수 있어요";
-          parts.push('<section class="card care-done" aria-label="저녁 돌봄 확정">' + head +
+          var doneHead = '<div class="card-head wrap">' +
+            '<span class="card-title"><span class="ico">🌙</span>저녁 돌봄</span>' +
+            '<div class="care-acts">' +
+              '<button class="mini-change" type="button" aria-label="저녁 돌봄 담당 바꾸기"' +
+                ' data-open-slot="care" data-date="' + date + '">' +
+                '<span class="em" aria-hidden="true">🔄</span>변경</button>' +
+              '<button class="mini-change mini-cancel" type="button" aria-label="찜 취소하기"' +
+                ' data-unassign="' + date + '">' +
+                '<span class="em" aria-hidden="true">✕</span>취소</button>' +
+            "</div>" +
+            '<span class="time-badge long">' + timeRange(ev) + "</span></div>";
+          parts.push('<section class="card care-done" aria-label="저녁 돌봄 확정">' + doneHead +
             '<div class="done-row"><span class="badge-done"><span aria-hidden="true">✓</span> 찜 완료</span>' +
             chip(assignedTo, true) + "</div>" +
             '<p class="done-msg">' + MEMBERS[assignedTo].subj + "가 " + ev.start + "부터<br>" + ev.endLabel + " 채은이를 봐요.</p>" +
             '<p class="done-when">' + when + "</p>" +
-            '<div class="done-actions">' +
-              '<button class="btn-act btn-change" type="button" data-open-slot="care" data-date="' + date + '">' +
-                '<span class="ico" aria-hidden="true">🔄</span>다른 사람으로 변경</button>' +
-              '<button class="btn-act btn-cancel" type="button" data-unassign="' + date + '">' +
-                '<span class="ico" aria-hidden="true">✕</span>찜 취소하기</button>' +
-            "</div></section>");
+            "</section>");
         }
       } else {
         parts.push('<section class="card care-free" aria-label="저녁 여유">' +
