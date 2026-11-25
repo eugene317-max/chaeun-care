@@ -756,9 +756,9 @@
 
     <div class="cal-body" id="calMonth">
       <div class="cal-wd" aria-hidden="true">
-        <span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span><span class="sun">일</span>
+        <span class="sun">일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span class="sat">토</span>
       </div>
-      <div class="cal-grid" id="calGrid" role="group" aria-label="2026년 11월 25일부터 12월 달력"></div>
+      <div class="cal-grid" id="calGrid" role="group" aria-label="2026년 11월 22일부터 12월 달력, 일요일 시작"></div>
       <div class="cal-key">
         <span><i class="red"></i>돌봄 필요</span>
         <span><i class="ok-i">✓</i>확정</span>
@@ -943,19 +943,19 @@
   var MEAL_MONTH_NOTE = "12월 식단표 등록 시 자동 반영 예정";
   var PENDING_NOTICE = "민용 님 일정 확인 전 · 등록 대기";
 
-  /* ── 달력 셀: 2026-11-23(월) ~ 2027-01-03(일), 월~일 6줄
-      11/23~11/29 · 11/30~12/6 · 12월 나머지 주가 한 줄씩 되게, 11/25 이전은 지난 날로 흐리게 ── */
+  /* ── 달력 셀: 일~토 요일 순서로 2026-11-22(일) ~ 2027-01-02(토), 6줄
+      11/22~11/28 · 11/29~12/5 · 12월 나머지 주가 한 줄씩 되게, 11/25 이전은 지난 날로 흐리게 ── */
   var CELLS = (function () {
     var out = [];
     for (var i = 0; i < 42; i++) {
-      var d = new Date(2026, 10, 23 + i);
+      var d = new Date(2026, 10, 22 + i);
       var key = iso(d);
       out.push({
         date: key,
         d: d.getDate(),
         dow: d.getDay(),
         inMonth: d.getMonth() === 11,
-        show: key >= "2026-11-23" && key <= "2026-12-31",
+        show: key >= "2026-11-22" && key <= "2026-12-31",
         past: key < DEFAULT_DATE
       });
     }
