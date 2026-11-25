@@ -461,7 +461,7 @@
   }
   .pick .nm{font-size:19px;font-weight:800;letter-spacing:-.02em}
   .pick .role{font-size:14px;font-weight:700;color:var(--ink-mute);margin-top:-2px}
-  .pick .go{margin-left:auto;font-size:15px;font-weight:800;color:var(--coral)}
+  .pick .go{margin-left:auto;font-size:15px;font-weight:800;color:var(--coral);white-space:nowrap}
   .pick[data-m="yujin"] .face{background:var(--m-yujin-bg);box-shadow:inset 0 0 0 2px var(--m-yujin-line)}
   .pick[data-m="minyong"] .face{background:var(--m-minyong-bg);box-shadow:inset 0 0 0 2px var(--m-minyong-line)}
   .pick[data-m="grandma"] .face{background:var(--m-grandma-bg);box-shadow:inset 0 0 0 2px var(--m-grandma-line)}
@@ -699,7 +699,7 @@
   .pick.me .go{color:var(--coral)}
   .pick.revert{border-style:dashed;background:#FFFBF5}
   .pick.revert .face{background:#FFF3DA;font-size:20px}
-  .pick.revert .go{color:#8A6A3F}
+  .pick.revert .nm{font-size:16.5px}
   .pick-egap{display:flex;align-items:center;gap:9px;margin:4px 2px 0;
     font-size:12.5px;font-weight:800;color:var(--ink-mute)}
   .pick-egap::before,.pick-egap::after{content:"";flex:1;height:1px;background:var(--line)}
@@ -1801,8 +1801,7 @@
       html += '<button class="pick revert" type="button" data-revert="' + slot + '" data-date="' + date + '">' +
         '<span class="face" aria-hidden="true">↩️</span>' +
         '<span><span class="nm">기본값(' + MEMBERS[def].name + ')으로 되돌리기</span>' +
-        '<span class="role">' + SLOT_LABEL[slot] + "을 원래대로 둘 때</span></span>" +
-        '<span class="go">되돌리기</span></button>';
+        '<span class="role">' + SLOT_LABEL[slot] + "을 원래대로 둘 때</span></span></button>";
     }
     $("pickList").innerHTML = html;
   }
