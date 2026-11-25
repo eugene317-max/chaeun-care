@@ -1,0 +1,25 @@
+{
+  "name": "채은이 케어",
+  "short_name": "채은이 케어",
+  "description": "채은이 등하원과 어린이집 식단을 가족이 함께 보고 조율하는 공유 화면",
+  "lang": "ko",
+  "start_url": "/chaeun-care/",
+  "scope": "/chaeun-care/",
+  "display": "standalone",
+  "background_color": "#FFF7EE",
+  "theme_color": "#FFF7EE",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
