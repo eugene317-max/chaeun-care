@@ -565,6 +565,10 @@
   .cell.need .dot{background:var(--red);box-shadow:0 0 0 3px rgba(222,59,64,.13);animation:cellPulse 2.6s ease-in-out infinite}
   .cell.ok{background:#E9F8F2;border-color:#B4E5D5}
   .cell.ok .n{color:#176A54}
+  /* 담당이 정해 둔 날 = 찜 확정보다 한결 연한 초록 */
+  .cell.plan{background:#F4FBF8;border-color:#D8EEE5}
+  .cell.plan .n{color:#2C7A63}
+  .cell .chk.plan{background:#A9DCC9}
   .cell.out-month{background:transparent}
   .cell.out-month .n{color:#C0B1A0;font-weight:700}
   .cell.out-month.weekend{background:#FAF6F1}
@@ -975,7 +979,9 @@
        12/1(화)부터는 유진님 복직으로 등원 기본값을 할머니로 바꿨어요 —
        아빠(민용) 오전 10:00~13:00 강의가 있는 날은 할머니가 등원해요.
        12월 둘째 주(12/7~12/11)는 내일코칭 오전반이 12/4 종강이라 오전 반이 없어,
-       민용 님이 오전 10:00~13:00 더빌드업 강의가 있는 화·금만 할머니가 등원해요. ── */
+       민용 님이 오전 10:00~13:00 더빌드업 강의가 있는 화·금만 할머니가 등원해요.
+       금요일(11/27·12/4·12/11)은 유진이 저녁 일정이 있어 저녁은 아빠(민용)가 봐요.
+       (저녁 담당 기본값이 정해진 날 = kind: "plan". 가족이 🔄 변경으로 바꾸면 그 값이 우선해요.) ── */
   var BASE = {
     "2026-11-25": { rel: "", dropoff: "yujin", pickup: "yujin",
       evening: { kind: "free", who: "yujin" },
@@ -984,8 +990,8 @@
       evening: { kind: "free", who: "yujin" },
       memoExample: "저녁은 유진이 챙기기 · 여분 옷 가방에 넣기" },
     "2026-11-27": { rel: "", dropoff: "yujin", pickup: "minyong",
-      evening: { kind: "free", who: "yujin" },
-      memoExample: "주말 앞 금요일 — 여분 옷 가방에 넣기" },
+      evening: { kind: "plan", who: "minyong" },
+      memoExample: "아빠가 저녁 봐요 — 여분 옷 가방에 넣기" },
     "2026-11-30": { rel: "복직 첫날", dropoff: "minyong", pickup: "minyong",
       evening: { kind: "need", start: "17:30", endLabel: "유진 퇴근 전까지" },
       memoExample: "11/30 유진 복직 첫날! 낮잠이불 챙기기" },
@@ -996,8 +1002,9 @@
       memoExample: "오늘은 여유 있는 날 — 저녁은 집밥으로" },
     "2026-12-03": { rel: "", dropoff: "grandma", pickup: "minyong", evening: { kind: "free", who: "minyong" },
       memoExample: "목욕 타월 하나 더 챙기기" },
-    "2026-12-04": { rel: "", dropoff: "grandma", pickup: "minyong", evening: { kind: "free", who: "minyong" },
-      memoExample: "주말 나들이 옷 미리 꺼내두기" },
+    "2026-12-04": { rel: "", dropoff: "grandma", pickup: "minyong",
+      evening: { kind: "plan", who: "minyong" },
+      memoExample: "아빠가 저녁 봐요 — 주말 나들이 옷 미리 꺼내두기" },
     /* 12월 둘째 주 — 민용 님 저녁 19:00 강의가 있는 월·수는 17:30부터 돌봄이 필요해요 */
     "2026-12-07": { rel: "", dropoff: "minyong", pickup: "minyong",
       evening: { kind: "need", start: "17:30", endLabel: "유진 퇴근 전까지" },
@@ -1009,8 +1016,9 @@
       memoExample: "여분 기저귀·물티슈 가방에 채워두기" },
     "2026-12-10": { rel: "", dropoff: "minyong", pickup: "minyong", evening: { kind: "free", who: "minyong" },
       memoExample: "오늘은 여유 있는 날 — 저녁은 집밥으로" },
-    "2026-12-11": { rel: "", dropoff: "grandma", pickup: "minyong", evening: { kind: "free", who: "minyong" },
-      memoExample: "주말 앞 금요일 — 나들이 옷 미리 꺼내두기" }
+    "2026-12-11": { rel: "", dropoff: "grandma", pickup: "minyong",
+      evening: { kind: "plan", who: "minyong" },
+      memoExample: "아빠가 저녁 봐요 — 나들이 옷 미리 꺼내두기" }
   };
   var NEED_DATES = ["2026-11-30", "2026-12-01", "2026-12-07", "2026-12-09"];
   var DEFAULT_DATE = "2026-11-25";   // 지난 날 기준 · 오늘이 달력 범위 밖일 때의 기본 날
@@ -1487,7 +1495,9 @@
     if (!d) return null;
     if (slot === "drop") return MEMBERS[d.dropoff] ? d.dropoff : null;
     if (slot === "pick") return MEMBERS[d.pickup] ? d.pickup : null;
-    return null;   /* 저녁 돌봄은 정해 둔 기본값이 없어요 */
+    /* 저녁 돌봄 — 담당이 정해 둔 날(plan)만 기본값이 있어요 */
+    if (d.evening && d.evening.kind === "plan" && MEMBERS[d.evening.who]) return d.evening.who;
+    return null;
   }
   function whoFor(date, slot) {
     var s = state.slots[date];
@@ -1525,11 +1535,12 @@
   /* 저녁 돌봄이 끝나는 때 — 시각이 아니라 '유진 퇴근 전까지'로 표기해요 */
   function timeRange(ev) { return ev.start + " ~ " + ev.endLabel; }
 
-  /* 날짜 상태: ok = 찜 확정, need = 돌봄 필요, free = 저녁 여유, weekend = 주말, pending = 일정 등록 전 */
+  /* 날짜 상태: ok = 찜 확정, need = 돌봄 필요, plan = 담당 정해 둔 날, free = 저녁 여유, weekend = 주말, pending = 일정 등록 전 */
   function statusOf(date) {
     var info = BASE[date];
     if (info) {
       if (info.evening.kind === "need") return state.assign[date] ? "ok" : "need";
+      if (info.evening.kind === "plan") return state.assign[date] ? "ok" : "plan";
       return "free";
     }
     var dow = parseDate(date).getDay();
@@ -1568,6 +1579,7 @@
     if (c.date === TODAY) base = "오늘 " + base;
     if (st === "need") return base + " 돌봄 미정";
     if (st === "ok") return base + " " + MEMBERS[state.assign[c.date]].name + " 돌봄 확정";
+    if (st === "plan") return base + " " + MEMBERS[BASE[c.date].evening.who].name + " 저녁 돌봄";
     if (st === "free") return base + " 저녁 여유";
     if (st === "pending") return base + " 일정 등록 대기";
     return base + " 주말";
@@ -1586,6 +1598,7 @@
       var ind;
       if (st === "need") ind = '<span class="slot"><span class="dot" aria-hidden="true"></span></span>';
       else if (st === "ok") ind = '<span class="slot"><span class="chk" aria-hidden="true">✓</span></span>';
+      else if (st === "plan") ind = '<span class="slot"><span class="chk plan" aria-hidden="true">✓</span></span>';
       else if (st === "free") ind = '<span class="slot"><span class="dot soft" aria-hidden="true"></span></span>';
       else ind = '<span class="slot"></span>';
 
@@ -1620,10 +1633,13 @@
         flag = state.assign[date]
           ? '<span class="flag ok" aria-hidden="true"></span>'
           : '<span class="flag" aria-hidden="true"></span>';
+      } else if (day && day.evening.kind === "plan") {
+        flag = '<span class="flag ok" aria-hidden="true"></span>';
       }
       var label = mdw(date) + (state.assign[date]
         ? ", " + MEMBERS[state.assign[date]].name + " 돌봄 확정"
-        : (day && day.evening.kind === "need" ? ", 돌봄 미정" : ""));
+        : (day && day.evening.kind === "need" ? ", 돌봄 미정"
+          : (day && day.evening.kind === "plan" ? ", " + MEMBERS[day.evening.who].name + " 저녁 돌봄" : "")));
       return '<button class="tab" type="button" aria-pressed="' + selected + '" ' +
         'aria-label="' + label + '" data-date="' + date + '">' +
         '<span class="w">' + WD[parseDate(date).getDay()] + "</span>" +
@@ -1726,6 +1742,28 @@
             '<p class="done-when">' + when + "</p>" +
             "</section>");
         }
+      } else if (ev.kind === "plan") {
+        /* 담당이 정해 둔 날 — 유진은 저녁 일정이 있어 아빠가 봐요. 가족이 🔄 변경으로 바꾸면 그 값이 우선해요. */
+        var planWho = assignedTo || ev.who;
+        var planHead = '<div class="card-head wrap">' +
+          '<span class="card-title"><span class="ico">🌙</span>저녁 돌봄</span>' +
+          '<div class="care-acts">' +
+            '<button class="mini-change" type="button" aria-label="저녁 돌봄 담당 바꾸기"' +
+              ' data-open-slot="care" data-date="' + date + '">' +
+              '<span class="em" aria-hidden="true">🔄</span>변경</button>' +
+            (assignedTo
+              ? '<button class="mini-change mini-cancel" type="button" aria-label="바꾼 담당 되돌리기"' +
+                  ' data-unassign="' + date + '">' +
+                  '<span class="em" aria-hidden="true">✕</span>되돌리기</button>'
+              : "") +
+          "</div>" +
+          '<span class="time-badge">' + (assignedTo ? "가족이 바꿈" : "아빠 담당") + "</span></div>";
+        parts.push('<section class="card care-done" aria-label="저녁 돌봄 담당">' + planHead +
+          '<div class="done-row"><span class="badge-done"><span aria-hidden="true">✓</span> 담당 정해짐</span>' +
+          chip(planWho, true) + "</div>" +
+          '<p class="done-msg">유진은 저녁 일정이 있어요.<br>' + MEMBERS[planWho].subj + "가 저녁을 봐요.</p>" +
+          '<p class="done-when">유진 저녁 일정 있음 · ' + MEMBERS[planWho].name + " 돌봄</p>" +
+          "</section>");
       } else {
         parts.push('<section class="card care-free" aria-label="저녁 여유">' +
           '<div class="card-head wrap"><span class="card-title"><span class="ico">🌙</span>저녁</span>' +
@@ -1924,8 +1962,13 @@
     if (title) title.textContent = slot === "drop" ? "누가 등원할까요?" :
       (slot === "pick" ? "누가 하원할까요?" : "누가 돌볼까요?");
     if (sub) {
-      sub.textContent = mdw(date) + " " + SLOT_LABEL[slot] +
-        (slot === "care" && info ? " · " + timeRange(info.evening) : "");
+      var subTail = "";
+      if (slot === "care" && info) {
+        subTail = info.evening.kind === "plan"
+          ? " · 유진 저녁 일정 있음"
+          : " · " + timeRange(info.evening);
+      }
+      sub.textContent = mdw(date) + " " + SLOT_LABEL[slot] + subTail;
     }
 
     var nowWho = whoFor(date, slot);
@@ -2052,8 +2095,11 @@
     if (un) {
       var date = un.getAttribute("data-unassign");
       if (!state.assign[date]) return;
+      var pv = BASE[date];
       doUnassign(date);
-      toast("찜을 취소했어요 · 다시 미정이에요");
+      toast(pv && pv.evening && pv.evening.kind === "plan"
+        ? "바꾼 담당을 되돌렸어요 · 다시 " + MEMBERS[pv.evening.who].name + "가 봐요"
+        : "찜을 취소했어요 · 다시 미정이에요");
     }
   });
 
@@ -2079,6 +2125,11 @@
     var prev = whoFor(date, sheetSlot);
     var slot = sheetSlot;
     closeSheet();
+    /* 담당이 정해 둔 날에 그 사람을 다시 고르면 서버에 새로 쓰지 않고 그대로 둬요 */
+    if (slot === "care" && prev === m && !state.assign[date]) {
+      toast(MEMBERS[m].name + "가 그대로 저녁을 봐요 ✓");
+      return;
+    }
     doSetSlot(date, slot, m);
     if (slot === "care") {
       toast(prev && prev !== m
