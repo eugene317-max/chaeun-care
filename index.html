@@ -751,7 +751,7 @@
   <header class="hero">
     <div class="hero-top">
       <span class="pill daycare">🏫 놀이세상어린이집</span>
-      <span class="pill week">2026.11.25 – 12.04</span>
+      <span class="pill week">2026.11.25 – 12.13</span>
     </div>
     <h1><span class="egg">🐣</span> 채은이 등하원<br>&amp; 식단 공유</h1>
 
@@ -968,12 +968,14 @@
   function mdw(s) { return md(s) + "(" + WD[parseDate(s).getDay()] + ")"; }
   function longDate(s) { var d = parseDate(s); return (d.getMonth() + 1) + "월 " + d.getDate() + "일"; }
 
-  /* ── 등록된 일정 (11/25 ~ 12/6)
+  /* ── 등록된 일정 (11/25 ~ 12/11)
        가족 모두에게 보이는 건 '누가 언제 채은이를 보는지'뿐이에요.
        민용 님 상세 일정은 이 파일이 아니라 서버(chaeun_care_schedules)에서
        엄마·아빠 계정일 때만 불러와 그립니다.
        12/1(화)부터는 유진님 복직으로 등원 기본값을 할머니로 바꿨어요 —
-       아빠(민용) 오전 10:00~13:00 강의가 있는 날은 할머니가 등원해요. ── */
+       아빠(민용) 오전 10:00~13:00 강의가 있는 날은 할머니가 등원해요.
+       12월 둘째 주(12/7~12/11)는 내일코칭 오전반이 12/4 종강이라 오전 반이 없어,
+       민용 님이 오전 10:00~13:00 더빌드업 강의가 있는 화·금만 할머니가 등원해요. ── */
   var BASE = {
     "2026-11-25": { rel: "", dropoff: "yujin", pickup: "yujin",
       evening: { kind: "free", who: "yujin" },
@@ -995,9 +997,22 @@
     "2026-12-03": { rel: "", dropoff: "grandma", pickup: "minyong", evening: { kind: "free", who: "minyong" },
       memoExample: "목욕 타월 하나 더 챙기기" },
     "2026-12-04": { rel: "", dropoff: "grandma", pickup: "minyong", evening: { kind: "free", who: "minyong" },
-      memoExample: "주말 나들이 옷 미리 꺼내두기" }
+      memoExample: "주말 나들이 옷 미리 꺼내두기" },
+    /* 12월 둘째 주 — 민용 님 저녁 19:00 강의가 있는 월·수는 17:30부터 돌봄이 필요해요 */
+    "2026-12-07": { rel: "", dropoff: "minyong", pickup: "minyong",
+      evening: { kind: "need", start: "17:30", endLabel: "유진 퇴근 전까지" },
+      memoExample: "12월 둘째 주 시작 — 낮잠이불·여분 옷 챙기기" },
+    "2026-12-08": { rel: "", dropoff: "grandma", pickup: "minyong", evening: { kind: "free", who: "minyong" },
+      memoExample: "할머니 등원 — 준비물 미리 현관에 두기" },
+    "2026-12-09": { rel: "", dropoff: "minyong", pickup: "minyong",
+      evening: { kind: "need", start: "17:30", endLabel: "유진 퇴근 전까지" },
+      memoExample: "여분 기저귀·물티슈 가방에 채워두기" },
+    "2026-12-10": { rel: "", dropoff: "minyong", pickup: "minyong", evening: { kind: "free", who: "minyong" },
+      memoExample: "오늘은 여유 있는 날 — 저녁은 집밥으로" },
+    "2026-12-11": { rel: "", dropoff: "grandma", pickup: "minyong", evening: { kind: "free", who: "minyong" },
+      memoExample: "주말 앞 금요일 — 나들이 옷 미리 꺼내두기" }
   };
-  var NEED_DATES = ["2026-11-30", "2026-12-01"];
+  var NEED_DATES = ["2026-11-30", "2026-12-01", "2026-12-07", "2026-12-09"];
   var DEFAULT_DATE = "2026-11-25";   // 지난 날 기준 · 오늘이 달력 범위 밖일 때의 기본 날
   var LAST_DATE = "2026-12-31";      // 달력에서 실제로 고를 수 있는 마지막 날
 
@@ -1071,12 +1086,14 @@
     return out;
   })();
 
-  /* ── 주간 보기 두 주: 이번 주(11/25~11/29) · 다음 주(11/30~12/6) ── */
+  /* ── 주간 보기 세 주: 이번 주(11/25~11/29) · 다음 주(11/30~12/6) · 다다음 주(12/7~12/13) ── */
   var WEEKS = [
     { label: "이번 주", range: "11/25 – 11/29",
       dates: ["2026-11-25", "2026-11-26", "2026-11-27", "2026-11-28", "2026-11-29"] },
     { label: "다음 주", range: "11/30 – 12/6",
-      dates: ["2026-11-30", "2026-12-01", "2026-12-02", "2026-12-03", "2026-12-04", "2026-12-05", "2026-12-06"] }
+      dates: ["2026-11-30", "2026-12-01", "2026-12-02", "2026-12-03", "2026-12-04", "2026-12-05", "2026-12-06"] },
+    { label: "다다음 주", range: "12/7 – 12/13",
+      dates: ["2026-12-07", "2026-12-08", "2026-12-09", "2026-12-10", "2026-12-11", "2026-12-12", "2026-12-13"] }
   ];
   function weekOf(date) {
     for (var i = 0; i < WEEKS.length; i++) {
@@ -1539,9 +1556,10 @@
     alert.classList.remove("done");
     ico.textContent = "🔔";
     title.textContent = "돌봄 필요 " + open.length + "건";
+    /* 날짜가 3건 이상이면 '·' 뒤에서 줄이 바뀌도록 가운뎃점 양옆을 띄워요 */
     sub.innerHTML = open.map(function (date) {
       return mdw(date);
-    }).join("·") + '<span class="alert-time">' + timeRange(BASE[open[0]].evening) + "</span>";
+    }).join(" · ") + '<span class="alert-time">' + timeRange(BASE[open[0]].evening) + "</span>";
   }
 
   /* ── 월간 달력 ── */
@@ -1582,7 +1600,7 @@
     }).join("");
   }
 
-  /* ── 주간 보기: 이번 주 / 다음 주 고르기 ── */
+  /* ── 주간 보기: 이번 주 / 다음 주 / 다다음 주 고르기 ── */
   function renderWeekSwitch() {
     $("weekSwitch").innerHTML = WEEKS.map(function (w, i) {
       return '<button type="button" data-week="' + i + '" aria-pressed="' + (i === state.week) + '">' +
@@ -2005,7 +2023,7 @@
     var view = btn.getAttribute("data-view");
     if (view === state.view) return;
     state.view = view;
-    /* 주간 보기는 이번 주·다음 주만 보여줘서, 다른 주를 보고 있었다면 이번 주 첫 날로 맞춰요 */
+    /* 주간 보기는 이번 주·다음 주·다다음 주를 보여줘서, 그 밖의 주를 보고 있었다면 이번 주 첫 날로 맞춰요 */
     if (view === "week") {
       var w = weekOf(state.current);
       if (w < 0) { w = 0; state.current = WEEKS[0].dates[0]; }
