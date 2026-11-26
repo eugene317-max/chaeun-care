@@ -518,6 +518,25 @@
   .seg-btn[aria-pressed="true"]{background:#fff;color:var(--coral);box-shadow:0 2px 6px rgba(160,120,90,.16)}
   .seg-btn:focus-visible{outline:3px solid #F7B9A6;outline-offset:2px}
 
+  /* 달력 머리 오른쪽: 작은 '오늘' 버튼 + 월간/주간 전환 */
+  .cal-tools{margin-left:auto;display:flex;align-items:center;gap:6px;flex:none}
+  .cal-tools .seg{margin-left:0}
+  .today-btn{
+    position:relative;display:inline-flex;align-items:center;justify-content:center;
+    flex:none;min-height:30px;padding:5px 10px;border-radius:999px;
+    border:1.2px solid #F3CBBB;background:#FFF3EC;
+    color:#C0492C;font-family:inherit;font-size:12.5px;font-weight:800;letter-spacing:-.02em;
+    line-height:1;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;
+    transition:transform .1s ease, background .15s ease, border-color .15s ease, opacity .15s ease;
+  }
+  .today-btn::after{content:"";position:absolute;inset:-9px -4px;border-radius:999px}
+  .today-btn:hover{background:#FFE7DA}
+  .today-btn:active{transform:scale(.96)}
+  .today-btn:focus-visible{outline:3px solid #F7B9A6;outline-offset:2px}
+  /* 이미 오늘을 보고 있으면 한결 연하게 — 눌러도 그대로예요 */
+  .today-btn.is-on{opacity:.5;border-color:#EBDCCF;background:#FBF3EC;color:#9C8574}
+  .today-btn[hidden]{display:none}
+
   .cal-body{padding:0 2px}
   .cal-wd{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:0 0 5px}
   .cal-wd span{text-align:center;font-size:12.5px;font-weight:800;color:var(--ink-mute);letter-spacing:-.01em}
@@ -778,9 +797,12 @@
   <section class="cal-card" aria-labelledby="calTitle">
     <div class="cal-head">
       <h2 id="calTitle">2026년 11~12월</h2>
-      <div class="seg" role="group" aria-label="보기 방식">
-        <button class="seg-btn" type="button" data-view="month" aria-pressed="true">월간</button>
-        <button class="seg-btn" type="button" data-view="week" aria-pressed="false">주간</button>
+      <div class="cal-tools">
+        <button class="today-btn" type="button" id="todayBtn" aria-label="오늘로 이동">오늘</button>
+        <div class="seg" role="group" aria-label="보기 방식">
+          <button class="seg-btn" type="button" data-view="month" aria-pressed="true">월간</button>
+          <button class="seg-btn" type="button" data-view="week" aria-pressed="false">주간</button>
+        </div>
       </div>
     </div>
 
@@ -976,7 +998,25 @@
       memoExample: "주말 나들이 옷 미리 꺼내두기" }
   };
   var NEED_DATES = ["2026-11-30", "2026-12-01"];
-  var DEFAULT_DATE = "2026-11-25";   // 화면을 열면 가장 먼저 보여줄 날 (오늘 11/24의 다음 날)
+  var DEFAULT_DATE = "2026-11-25";   // 지난 날 기준 · 오늘이 달력 범위 밖일 때의 기본 날
+  var LAST_DATE = "2026-12-31";      // 달력에서 실제로 고를 수 있는 마지막 날
+
+  /* 오늘 날짜 — 기기 시간대와 상관없이 항상 한국 시간(Asia/Seoul) 기준으로 구해요 */
+  function seoulToday() {
+    try {
+      var p = new Intl.DateTimeFormat("en-US", {
+        timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit"
+      }).formatToParts(new Date());
+      var m = {};
+      for (var i = 0; i < p.length; i++) m[p[i].type] = p[i].value;
+      if (m.year && m.month && m.day) return m.year + "-" + m.month + "-" + m.day;
+    } catch (e) { /* Intl 을 못 쓰는 환경은 기기 날짜로 */ }
+    return iso(new Date());
+  }
+  var TODAY = seoulToday();
+  var TODAY_IN_RANGE = TODAY >= DEFAULT_DATE && TODAY <= LAST_DATE;
+  /* 화면을 열면 가장 먼저 보여줄 날 = 오늘 (달력 범위 밖이면 기존 기본값) */
+  var INITIAL_DATE = TODAY_IN_RANGE ? TODAY : DEFAULT_DATE;
 
   /* ── 어린이집 식단 (data/chaeun-meals-2026-11.json 중 11/25~11/27 · 11/30) ── */
   var MEALS = {
@@ -1052,9 +1092,9 @@
     assign: {},      // 저녁 돌봄만 모아 둔 것 (예전 화면 코드 호환)
     assignMeta: {},  // { "2026-11-30": "2026-11-24T05:30:00Z" }
     memos: {},       // { "2026-11-30": [ { id, text, created_at } ] }
-    current: DEFAULT_DATE,
+    current: INITIAL_DATE,
     view: "month",
-    week: 0
+    week: Math.max(0, weekOf(INITIAL_DATE))
   };
 
   /* state.slots → state.assign (저녁 돌봄) 맞추기 */
@@ -1507,6 +1547,7 @@
   /* ── 월간 달력 ── */
   function cellLabel(c, st) {
     var base = md(c.date) + "(" + WD[c.dow] + ")";
+    if (c.date === TODAY) base = "오늘 " + base;
     if (st === "need") return base + " 돌봄 미정";
     if (st === "ok") return base + " " + MEMBERS[state.assign[c.date]].name + " 돌봄 확정";
     if (st === "free") return base + " 저녁 여유";
@@ -1532,6 +1573,7 @@
 
       var cls = ["cell", st];
       if (!c.inMonth && !BASE[c.date]) cls.push("out-month");
+      if (c.date === TODAY) cls.push("today");
       if (sel) cls.push("sel");
       return '<button class="' + cls.join(" ") + '" type="button" data-date="' + c.date + '" ' +
         'aria-pressed="' + sel + '" aria-label="' + cellLabel(c, st) + '">' +
@@ -1828,12 +1870,28 @@
   function renderAll() {
     renderAlert();
     renderView();
+    renderTodayBtn();
     renderPanel();
     renderMeal();
     renderMemo();
     renderWriter();
     /* 시트를 열어둔 채 가족이 다른 사람을 정했으면 라벨도 같이 맞춰요 */
     if (sheetDate && $("sheet").classList.contains("open")) renderPickList(sheetDate);
+  }
+
+  /* ── 작은 '오늘' 버튼 상태 ── */
+  function renderTodayBtn() {
+    var b = $("todayBtn");
+    if (!b) return;
+    /* 오늘이 달력 범위 밖이면 누를 곳이 없으니 버튼을 감춰요 */
+    if (!TODAY_IN_RANGE) { b.hidden = true; return; }
+    b.hidden = false;
+    var on = state.current === TODAY;
+    b.classList.toggle("is-on", on);
+    b.setAttribute("aria-label", on
+      ? "지금 오늘(" + mdw(TODAY) + ")을 보고 있어요"
+      : "오늘(" + mdw(TODAY) + ")로 이동");
+    b.title = on ? "오늘을 보고 있어요" : "오늘로 이동";
   }
 
   /* ── 바텀시트 (등원·하원·저녁 돌봄 공용) ── */
@@ -1929,6 +1987,16 @@
     var btn = e.target.closest(".tab");
     if (!btn) return;
     selectDate(btn.getAttribute("data-date"));
+  });
+
+  /* 작은 '오늘' 버튼 — 다른 날·다른 주를 보고 있어도 오늘로 돌아와요 */
+  $("todayBtn").addEventListener("click", function () {
+    if (!TODAY_IN_RANGE) return;
+    var changed = state.current !== TODAY;
+    var w = weekOf(TODAY);
+    if (w >= 0) state.week = w;
+    selectDate(TODAY);
+    if (changed) toast(mdw(TODAY) + " 오늘로 왔어요");
   });
 
   document.querySelector(".seg").addEventListener("click", function (e) {
@@ -2040,9 +2108,9 @@
 
   /* 공용 DB 를 실수로 날리지 않도록 '보고 있던 화면'만 처음으로 되돌립니다 */
   $("resetBtn").addEventListener("click", function () {
-    state.current = DEFAULT_DATE;
+    state.current = INITIAL_DATE;
     state.view = "month";
-    state.week = 0;
+    state.week = Math.max(0, weekOf(INITIAL_DATE));
     renderAll();
     try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) { window.scrollTo(0, 0); }
     toast("화면만 처음으로 돌렸어요 · 가족 찜·메모는 그대로예요");
